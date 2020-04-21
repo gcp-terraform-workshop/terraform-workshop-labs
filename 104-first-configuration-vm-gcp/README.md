@@ -15,8 +15,6 @@ The resources you will use in this challenge:
 
 Change directory into a folder specific to this challenge.
 
-For example: `cd ~/TerraformWorkshop/103-basic-tf-configurations/`.
-
 We will start with a few of the basic resources needed.
 
 Create a `main.tf` file to hold our configuration.
