@@ -1,4 +1,4 @@
-# Azure Virtual Machine
+# GCP Virtual Machine
 
 ## Expected Outcome
 
