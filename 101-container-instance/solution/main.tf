@@ -1,108 +1,66 @@
-terraform {
-  required_version = ">= 0.12.6"
-  required_providers {
-    azurerm = "= 1.31"
-  }
+provider "google" {
+  region      = "${var.region}"
+  project     = "${var.project_name}"
+  credentials = "${file("${var.credentials_file_path}")}"
 }
 
-resource "random_integer" "main" {
-  min = 500
-  max = 50000
-}
 
-resource "azurerm_resource_group" "main" {
-  name     = "PREFIX-aci-helloworld"
-  location = "centralus"
-}
+resource "google_compute_instance" "docker" {
+  count = 1
 
-resource "azurerm_storage_account" "main" {
-  resource_group_name      = azurerm_resource_group.main.name
-  location                 = azurerm_resource_group.main.location
-  name                     = "acidev${random_integer.main.result}"
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-}
+  name         = "tf-docker-${count.index}"
+  machine_type = "f1-micro"
+  zone         = "${var.region_zone}"
+  tags         = ["docker-node"]
 
-resource "azurerm_storage_share" "main" {
-  resource_group_name  = azurerm_resource_group.main.name
-  storage_account_name = azurerm_storage_account.main.name
-  name                 = "aci-test-share"
-  quota                = 1
-}
-
-resource "azurerm_container_group" "main" {
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
-  name                = "aci-helloworld"
-  ip_address_type     = "public"
-  dns_name_label      = "aci-${random_integer.main.result}"
-  os_type             = "linux"
-
-  container {
-    name   = "helloworld"
-    image  = "microsoft/aci-helloworld"
-    cpu    = "0.5"
-    memory = "1.5"
-    ports {
-      port     = 80
-      protocol = "TCP"
-    }
-
-    environment_variables = {
-      "NODE_ENV" = "testing"
-    }
-
-    volume {
-      name       = "logs"
-      mount_path = "/aci/logs"
-      read_only  = false
-      share_name = azurerm_storage_share.main.name
-
-      storage_account_name = azurerm_storage_account.main.name
-      storage_account_key  = azurerm_storage_account.main.primary_access_key
+  boot_disk {
+    initialize_params {
+      image = "ubuntu-os-cloud/ubuntu-1404-trusty-v20160602"
     }
   }
 
-  container {
-    name   = "sidecar"
-    image  = "microsoft/aci-tutorial-sidecar"
-    cpu    = "0.5"
-    memory = "1.5"
-  }
+  network_interface {
+    network = "default"
 
-  tags = {
-    environment = "testing"
-  }
-}
-
-output "aci-helloworld-fqdn" {
-  value = azurerm_container_group.main.fqdn
-}
-
-resource "azurerm_container_group" "windows" {
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
-  name                = "aci-iis"
-  ip_address_type     = "public"
-  dns_name_label      = "aci-iis-${random_integer.main.result}"
-  os_type             = "windows"
-
-  container {
-    name   = "dotnetsample"
-    image  = "microsoft/iis"
-    cpu    = "0.5"
-    memory = "1.5"
-    ports {
-      port     = 80
-      protocol = "TCP"
+    access_config {
+      # Ephemeral
     }
   }
 
-  tags = {
-    environment = "testing"
+  metadata {
+    ssh-keys = "root:${file("${var.public_key_path}")}"
+  }
+
+
+  provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      user        = "root"
+      private_key = "${file("${var.private_key_path}")}"
+      agent       = false
+    }
+
+    inline = [
+      "sudo curl -sSL https://get.docker.com/ | sh",
+      "sudo usermod -aG docker `echo $USER`",
+      "sudo docker run -d -p 80:80 nginx"
+    ]
+  }
+
+  service_account {
+    scopes = ["https://www.googleapis.com/auth/compute.readonly"]
   }
 }
 
-output "aci-iis-fqdn" {
-  value = "http://${azurerm_container_group.windows.fqdn}"
+resource "google_compute_firewall" "default" {
+  name    = "tf-www-firewall"
+  network = "default"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["80"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["docker-node"]
 }

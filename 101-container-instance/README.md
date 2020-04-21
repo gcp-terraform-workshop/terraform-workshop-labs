@@ -1,17 +1,16 @@
 # GCP Container Instance - THIS ONE IS NOT COPMPLETE! 
+In this challenge, you will learn how to deploy a container application on a Windows server using Terraform.
+
+- Create a VM for containers on Compute Engine.
+
+- Create a HelloWorld container app.
+
+- Containerize the app using Docker.
+
+- Run the Windows container app on Compute Engine.
 
 ## Expected Outcome
 
-In this challenge, you will learn how to deploy a PaaS solution using Terraform.
-
-There are two docker containers that will be deployed:
-
-- [Hello World](example1-single-docker-gcloud/README.md)
-    - A simple NodeJS web application that displays a message.
-    - Hosted on [Dockerhub](https://hub.docker.com/r/microsoft/aci-helloworld/)
-- [Sidecar](https://github.com/Azure-Samples/aci-tutorial-sidecar) 
-    - A simple watchdog script that calls the Hello World application every 3 seconds.
-    - Hosted on [Dockerhub](https://hub.docker.com/r/microsoft/aci-tutorial-sidecar/)
 
 ## How to
 
