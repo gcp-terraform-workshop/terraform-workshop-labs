@@ -1,4 +1,4 @@
-# Azure Virtual Machine
+# GCP Virtual Machine
 
 ## Expected Outcome
 
@@ -14,8 +14,6 @@ The resources you will use in this challenge:
 ### Create the base Terraform Configuration
 
 Change directory into a folder specific to this challenge.
-
-For example: `cd ~/TerraformWorkshop/103-basic-tf-configurations/`.
 
 We will start with a few of the basic resources needed.
 

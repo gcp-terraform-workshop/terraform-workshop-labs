@@ -8,16 +8,14 @@ In this challenge, you will:
 
 - Initialize Terraform
 - Run a `plan` on simple a simple resource
-- Run an `apply` to create Azure infrastructure
-- Run a `destroy` to remove Azure infrastructure
+- Run an `apply` to create GCP infrastructure
+- Run a `destroy` to remove GCP infrastructure
 
 ## How To
 
 ### Create Terraform Configuration
 
 Change directory into a folder specific to this challenge.
-
-For example: `cd ~/TerraformWorkshop/101-import/`.
 
 Create an empty file named `main.tf`.
 
@@ -127,7 +125,7 @@ We need two values to run the `terraform import` command:
 
 The Resource Address is simple enough, based on the configuration above it is simply "google_compute_network.vpc_network".
 
-The AzureResource ID is the resource name you gave the VPC when you created it. my-portal_vpc
+The resource id is the resource name you gave the VPC when you created it. my-portal_vpc
 
 Now run the import command:
 
@@ -146,7 +144,7 @@ The process here is the same.
 
 The Resource Address is simple enough, based on the configuration above it is simply "google_compute_subnetwork.vpc_subnet".
 
-The AzureResource ID is the resource name you gave the VPC subnet when you created it. my-portal_vpc-subnet.
+The resource ID is the resource name you gave the VPC subnet when you created it. my-portal_vpc-subnet.
 
 ```sh
 $ terraform import google_compute_subnetwork.vpc_subnet my-portal-vpc-subnet

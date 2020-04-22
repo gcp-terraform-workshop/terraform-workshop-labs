@@ -70,7 +70,7 @@ choco install -y git terraform
 
 Now, downlaod and run the gCloud installer
 ```sh
-https://cloud.google.com/sdk/docs/downloads-interactive#
+https://cloud.google.com/sdk/docs/downloads-interactive
 
 ```
 
