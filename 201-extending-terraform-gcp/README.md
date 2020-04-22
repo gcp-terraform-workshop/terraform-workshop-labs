@@ -10,8 +10,6 @@ In this challenge, you will use non cloud specific providers to assist in contai
 
 Change directory into a folder specific to this challenge.
 
-For example: `cd ~/TerraformWorkshop/201-extending-terraform/`.
-
 Create a  `main.tf` file, we will add to this file as we go.
 
 ### Random Generator
