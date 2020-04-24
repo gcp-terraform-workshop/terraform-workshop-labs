@@ -4,4 +4,4 @@ variable "location" {}
 
 variable "username" {}
 
-variable "vmss_count" {}
+variable "vm_count" {}

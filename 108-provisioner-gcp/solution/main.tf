@@ -3,10 +3,16 @@ variable "region" {
     default = "us-east1"
 }
 variable "project_id" {
-    default = "dazzling-mantra-271319"
+    default = "booth-test-55"
 }
+
+variable "zone" {
+  default = "us-east1-a"
+}
+
+
 variable "svc_acct_email" {
-  default = "dazzling-mantra-271319@appspot.gserviceaccount.com"
+  default = "booth-insight-sa@booth-test-55.iam.gserviceaccount.com"
 }
 variable "user" {
   default ="ed.boykin"
@@ -15,18 +21,16 @@ variable "user" {
 
 terraform {
   backend "gcs" {
-    credentials = "../../dazzling-mantra-271319-bcb28c004aed.json"
-    bucket  = "my-demo-storage-bucket"
-    prefix  = "terraform/state"
+    bucket  = "booth-demo-storage-bucket"
+    prefix  = "terraform/state108"
   
   }
 }
 
 provider "google" {
-  credentials = file("../../dazzling-mantra-271319-bcb28c004aed.json")
-  region  = "us-east1"
-  zone    = "us-east1-a"
-  project = "dazzling-mantra-271319"
+  region  = var.region
+  zone    = var.zone
+  project = var.project_id
   
 }
 
@@ -53,7 +57,7 @@ resource "google_compute_instance" "compute_instance" {
   zone         = "${var.region}-b"
 
   metadata = {
-    ssh-keys = "${var.user}:${file("~/.ssh/gcpvmkey.pub")}"
+    ssh-keys = "${var.user}:${file("~/.ssh/id_rsa.pub")}"
   }
 
   boot_disk {
@@ -82,7 +86,7 @@ resource "google_compute_instance" "compute_instance" {
       type     = "ssh"
       user        = var.user
       timeout     = "500s"
-      private_key = file("~/.ssh/gcpvmkey")
+      private_key = file("~/.ssh/id_rsa")
     }
 
     source      = "hello.py"
@@ -95,7 +99,7 @@ resource "google_compute_instance" "compute_instance" {
       type        = "ssh"
       user        = var.user
       timeout     = "500s"
-      private_key = file("~/.ssh/gcpvmkey")
+      private_key = file("~/.ssh/id_rsa")
     }
 
     inline = [
