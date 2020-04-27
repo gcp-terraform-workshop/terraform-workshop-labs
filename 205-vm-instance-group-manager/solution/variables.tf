@@ -1,7 +1,7 @@
 variable "prefix" {}
-
-variable "location" {}
-
+variable "region" {}
+variable "zone" {}
+variable "project" {}
 variable "username" {}
 
 variable "vm_count" {}

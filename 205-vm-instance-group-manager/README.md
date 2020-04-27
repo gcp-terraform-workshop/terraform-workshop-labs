@@ -25,15 +25,12 @@ Create a file `variables.tf` and add the following configuration:
 
 ```hcl
 variable "prefix" {}
-
-variable "location" {}
-
+variable "region" {}
+variable "zone" {}
+variable "project" {}
 variable "username" {}
+variable "vm_count" {}
 
-variable "vmss_count" {}
-variable "address_space" {}
-
-variable "address_prefix" {}
 ```
 
 ### Create Variables TF File

@@ -1,8 +1,37 @@
 provider "google" {
-  region  = "us-east1"
-  zone    = "us-east1-a"
-  project = "booth-test-55"
+  region  = var.region
+  zone    = var.zone
+  project = var.project
 
+}
+
+data "google_compute_network" "default" {
+  name = "default"
+}
+
+
+
+resource "google_compute_router" "router" {
+  name    = "my-router"
+  region  = var.region
+  network = data.google_compute_network.default.self_link
+
+  bgp {
+    asn = 64514
+  }
+}
+
+resource "google_compute_router_nat" "nat" {
+  name                               = "my-router-nat"
+  router                             = google_compute_router.router.name
+  region                             = google_compute_router.router.region
+  nat_ip_allocate_option             = "AUTO_ONLY"
+  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+
+  log_config {
+    enable = true
+    filter = "ERRORS_ONLY"
+  }
 }
 
 resource "google_compute_global_address" "public" {
@@ -10,7 +39,7 @@ resource "google_compute_global_address" "public" {
 }
 
 resource "google_compute_global_forwarding_rule" "paas-monitor" {
-  name       = "paas-monitor-port-80"
+  name       = "paas-monitor"
   ip_address = google_compute_global_address.public.address
   port_range = "80"
   target     = google_compute_target_http_proxy.public.self_link
@@ -46,20 +75,6 @@ resource "google_compute_firewall" "paas-monitor" {
   target_tags   = ["paas-monitor"]
 }
 
-# resource "google_compute_http_health_check" "check" {
-#   name         = "paas-monitor"
-#   request_path = "/health"
-
-#   timeout_sec        = 5
-#   check_interval_sec = 5
-#   port               = 80
-
-#   lifecycle {
-#     create_before_destroy = true
-#   }
-# }
-
-
 resource "google_compute_health_check" "check" {
   name = "tcp-health-check"
 
@@ -90,7 +105,7 @@ resource "google_compute_backend_service" "service" {
 }
 
 resource "google_compute_instance_template" "template" {
-  name        = "appserver-template"
+  name_prefix        = "appserver-template"
   description = "This template is used to create app server instances."
 
   tags = ["foo", "bar", "paas-monitor"]
@@ -116,19 +131,19 @@ resource "google_compute_instance_template" "template" {
   }
 
   // Use an existing disk resource
-  disk {
-    // Instance Templates reference disks by name, not self link
-    source      = google_compute_disk.foobar.name
-    auto_delete = false
-    boot        = false
-  }
+  # disk {
+  #   // Instance Templates reference disks by name, not self link
+  #   source      = google_compute_disk.foobar.name
+  #   auto_delete = false
+  #   boot        = false
+  # }
 
   network_interface {
     network = "default"
   }
 
   metadata = {
-    foo = "bar"
+    startup-script = file("custom-data.sh.tpl")
   }
 
   service_account {
@@ -150,8 +165,8 @@ resource "google_compute_disk" "foobar" {
   image   = data.google_compute_image.my_image.self_link
   size    = 10
   type    = "pd-ssd"
-  zone    = "us-east1-b"
-  project = "booth-test-55"
+  zone    = var.zone
+  project = var.project
 }
 
 resource "google_compute_instance_group_manager" "group" {
@@ -160,6 +175,11 @@ resource "google_compute_instance_group_manager" "group" {
     instance_template = google_compute_instance_template.template.self_link
   }
   base_instance_name = "instance-group-manager"
-  zone               = "us-east1-b"
-  target_size        = "1"
+  zone               = var.zone
+  target_size        = var.vm_count
+
+  named_port {
+    name = "paas-monitor"
+    port = "80"
+  }
 }

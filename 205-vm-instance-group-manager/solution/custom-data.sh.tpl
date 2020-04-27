@@ -1,5 +1,5 @@
 #!/bin/bash
-
+user=kbooth
 # Setup logging
 logfile="/home/${user}/custom-data.log"
 exec > $logfile 2>&1
