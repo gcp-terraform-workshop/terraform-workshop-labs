@@ -1,4 +1,3 @@
-
 terraform {
   backend "gcs" {
     credentials = "../../dazzling-mantra-271319-bcb28c004aed.json"

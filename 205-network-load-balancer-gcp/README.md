@@ -22,7 +22,8 @@ Create a new file name `loadbalancer.tf` file to hold our load balancer configur
 
 
 
-
+## add to main
+  target_pools = [google_compute_target_pool.default.self_link]
 
 
 ### Create Variables

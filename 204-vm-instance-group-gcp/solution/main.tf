@@ -91,7 +91,7 @@ resource "google_compute_instance_group_manager" "default" {
   }
 }
 
-resource "google_compute_http_health_check" "mig-health-check" {
+resource "google_compute_health_check" "mig-health-check" {
   name    = "my-instance-group-hc"
   project = var.project_id
 
