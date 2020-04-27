@@ -2,17 +2,11 @@
 
 ## Expected Outcome
 
-In this challenge, you will create a Azure Virtual Machine Scale Set.
+In this challenge, we will create a GCP instance group manager.
 
-The resources you will use in this challenge:
+A common application infrastructure usage pattern is to host many homogenous virtual machines behind a load balancer.  We will do this using GCP instance managera and GCP's load balancing services.
 
-- Resource Group
-- Virtual Network
-- Subnet
-- Network Interface
-- Virtual Machine Scale Set
-- Load Balancer
-- Public IP Address
+![](./images/diagram.png)
 
 ## How to
 
@@ -20,7 +14,6 @@ The resources you will use in this challenge:
 
 Change directory into a folder specific to this challenge.
 
-For example: `cd ~/TerraformWorkshop/201-virtual-machine-scale-set/`.
 
 We will start with a few of the basic resources needed.
 

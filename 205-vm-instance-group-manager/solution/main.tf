@@ -2,7 +2,7 @@ provider "google" {
   region  = "us-east1"
   zone    = "us-east1-a"
   project = "booth-test-55"
-  
+
 }
 
 resource "google_compute_global_address" "public" {
@@ -18,21 +18,57 @@ resource "google_compute_global_forwarding_rule" "paas-monitor" {
 
 resource "google_compute_target_http_proxy" "public" {
   name    = "paas-monitor"
-  url_map = "${google_compute_url_map.paas-monitor.self_link}"
+  url_map = google_compute_url_map.paas-monitor.self_link
 }
 
 resource "google_compute_url_map" "paas-monitor" {
-  name        = "paas-monitor"
+  name            = "paas-monitor"
   default_service = google_compute_backend_service.service.self_link
 }
 
-resource "google_compute_http_health_check" "check" {
-  name         = "paas-monitor"
-  request_path = "/health"
+resource "google_compute_firewall" "paas-monitor" {
+  ## firewall rules enabling the load balancer health checks
+  name    = "paas-monitor-firewall"
+  network = "default"
 
-  timeout_sec        = 5
-  check_interval_sec = 5
-  port               = 1337
+  description = "allow Google health checks and network load balancers access"
+
+  allow {
+    protocol = "icmp"
+  }
+
+  allow {
+    protocol = "tcp"
+    ports    = ["80"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["paas-monitor"]
+}
+
+# resource "google_compute_http_health_check" "check" {
+#   name         = "paas-monitor"
+#   request_path = "/health"
+
+#   timeout_sec        = 5
+#   check_interval_sec = 5
+#   port               = 80
+
+#   lifecycle {
+#     create_before_destroy = true
+#   }
+# }
+
+
+resource "google_compute_health_check" "check" {
+  name = "tcp-health-check"
+
+  timeout_sec        = 1
+  check_interval_sec = 1
+
+  tcp_health_check {
+    port = "80"
+  }
 
   lifecycle {
     create_before_destroy = true
@@ -47,17 +83,17 @@ resource "google_compute_backend_service" "service" {
   session_affinity = "NONE"
 
   backend {
-    group = google_compute_instance_group_manager.group.name
+    group = google_compute_instance_group_manager.group.instance_group
   }
 
-  health_checks = [google_compute_http_health_check.check.name]
+  health_checks = [google_compute_health_check.check.self_link]
 }
 
 resource "google_compute_instance_template" "template" {
   name        = "appserver-template"
   description = "This template is used to create app server instances."
 
-  tags = ["foo", "bar"]
+  tags = ["foo", "bar", "paas-monitor"]
 
   labels = {
     environment = "dev"
@@ -98,6 +134,10 @@ resource "google_compute_instance_template" "template" {
   service_account {
     scopes = ["userinfo-email", "compute-ro", "storage-ro"]
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 data "google_compute_image" "my_image" {
@@ -106,18 +146,18 @@ data "google_compute_image" "my_image" {
 }
 
 resource "google_compute_disk" "foobar" {
-  name  = "existing-disk"
-  image = data.google_compute_image.my_image.self_link
-  size  = 10
-  type  = "pd-ssd"
-  zone  = "us-east1-b"
+  name    = "existing-disk"
+  image   = data.google_compute_image.my_image.self_link
+  size    = 10
+  type    = "pd-ssd"
+  zone    = "us-east1-b"
   project = "booth-test-55"
 }
 
 resource "google_compute_instance_group_manager" "group" {
-  name               = "instance-group-manager"
+  name = "instance-group-manager"
   version {
-    instance_template  = google_compute_instance_template.template.self_link
+    instance_template = google_compute_instance_template.template.self_link
   }
   base_instance_name = "instance-group-manager"
   zone               = "us-east1-b"

@@ -11,14 +11,14 @@ module "gke" {
   http_load_balancing        = false
   horizontal_pod_autoscaling = true
   #kubernetes_dashboard       = false
-  network_policy             = false
+  network_policy = false
 
   node_pools = [
     {
       name               = "default-node-pool"
       machine_type       = "n1-standard-2"
       min_count          = 1
-      max_count          = 2  # quota errors if the number is too high
+      max_count          = 2 # quota errors if the number is too high
       disk_size_gb       = 10
       disk_type          = "pd-standard"
       image_type         = "COS"
@@ -53,17 +53,17 @@ module "gke" {
     }
   }
 
-#  node_pools_taints = {
-#    all = []
-#
-#    default-node-pool = [
-#      {
-#        key    = "default-node-pool"
-#        value  = "true"
-#        effect = "PREFER_NO_SCHEDULE"
-#      },
-#    ]
-#  }
+  #  node_pools_taints = {
+  #    all = []
+  #
+  #    default-node-pool = [
+  #      {
+  #        key    = "default-node-pool"
+  #        value  = "true"
+  #        effect = "PREFER_NO_SCHEDULE"
+  #      },
+  #    ]
+  #  }
 
   node_pools_tags = {
     all = []

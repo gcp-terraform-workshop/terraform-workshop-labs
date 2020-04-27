@@ -1,9 +1,9 @@
 //environment   = "PREFIX3"
-variable "region" { 
-    default = "us-east1"
+variable "region" {
+  default = "us-east1"
 }
 variable "project_id" {
-    default = "booth-test-55"
+  default = "booth-test-55"
 }
 
 variable "zone" {
@@ -15,15 +15,15 @@ variable "svc_acct_email" {
   default = "booth-insight-sa@booth-test-55.iam.gserviceaccount.com"
 }
 variable "user" {
-  default ="ed.boykin"
+  default = "ed.boykin"
 }
 
 
 terraform {
   backend "gcs" {
-    bucket  = "booth-demo-storage-bucket"
-    prefix  = "terraform/state108"
-  
+    bucket = "booth-demo-storage-bucket"
+    prefix = "terraform/state108"
+
   }
 }
 
@@ -31,12 +31,12 @@ provider "google" {
   region  = var.region
   zone    = var.zone
   project = var.project_id
-  
+
 }
 
 resource "google_compute_firewall" "default" {
-  name       = "default-firewall"
-  network    = "default"
+  name    = "default-firewall"
+  network = "default"
 
   allow {
     protocol = "icmp"
@@ -62,7 +62,7 @@ resource "google_compute_instance" "compute_instance" {
 
   boot_disk {
     initialize_params {
-      
+
       image = "ubuntu-os-cloud/ubuntu-1804-lts"
     }
   }
@@ -76,14 +76,14 @@ resource "google_compute_instance" "compute_instance" {
   }
 
   service_account {
-    email = var.svc_acct_email 
+    email  = var.svc_acct_email
     scopes = ["userinfo-email", "compute-ro", "storage-ro"]
   }
 
- provisioner "file" {
+  provisioner "file" {
     connection {
       host        = self.network_interface[0].access_config[0].nat_ip
-      type     = "ssh"
+      type        = "ssh"
       user        = var.user
       timeout     = "500s"
       private_key = file("~/.ssh/id_rsa")
@@ -94,7 +94,7 @@ resource "google_compute_instance" "compute_instance" {
   }
 
   provisioner "remote-exec" {
-      connection {
+    connection {
       host        = self.network_interface[0].access_config[0].nat_ip
       type        = "ssh"
       user        = var.user
@@ -110,7 +110,7 @@ resource "google_compute_instance" "compute_instance" {
       "sudo FLASK_APP=hello.py nohup flask run --host=0.0.0.0 --port=8000 &",
       "sleep 1"
     ]
-  }  
+  }
 }
 
 output "app-URL" {
