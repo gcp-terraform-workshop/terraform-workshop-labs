@@ -5,6 +5,54 @@ provider "google" {
   
 }
 
+resource "google_compute_global_address" "public" {
+  name = "public"
+}
+
+resource "google_compute_global_forwarding_rule" "paas-monitor" {
+  name       = "paas-monitor-port-80"
+  ip_address = google_compute_global_address.public.address
+  port_range = "80"
+  target     = google_compute_target_http_proxy.public.self_link
+}
+
+resource "google_compute_target_http_proxy" "public" {
+  name    = "paas-monitor"
+  url_map = "${google_compute_url_map.paas-monitor.self_link}"
+}
+
+resource "google_compute_url_map" "paas-monitor" {
+  name        = "paas-monitor"
+  default_service = google_compute_backend_service.service.self_link
+}
+
+resource "google_compute_http_health_check" "check" {
+  name         = "paas-monitor"
+  request_path = "/health"
+
+  timeout_sec        = 5
+  check_interval_sec = 5
+  port               = 1337
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "google_compute_backend_service" "service" {
+  name             = "paas-monitor-backend"
+  protocol         = "HTTP"
+  port_name        = "paas-monitor"
+  timeout_sec      = 10
+  session_affinity = "NONE"
+
+  backend {
+    group = google_compute_instance_group_manager.group.name
+  }
+
+  health_checks = [google_compute_http_health_check.check.name]
+}
+
 resource "google_compute_instance_template" "template" {
   name        = "appserver-template"
   description = "This template is used to create app server instances."
@@ -66,7 +114,7 @@ resource "google_compute_disk" "foobar" {
   project = "booth-test-55"
 }
 
-resource "google_compute_instance_group_manager" "instance_group_manager" {
+resource "google_compute_instance_group_manager" "group" {
   name               = "instance-group-manager"
   version {
     instance_template  = google_compute_instance_template.template.self_link
