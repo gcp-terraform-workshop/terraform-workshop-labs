@@ -1,10 +1,8 @@
-# GCP Container Instance - THIS ONE IS NOT COPMPLETE! 
-In this challenge, you will learn how to deploy a publically avalable container application using a module from a repository Terraform.
+# GCP Container Instance 
+In this challenge, you will learn how to deploy a publically avalable container application using a module from a repository.
 
 - Create a VM for containers with Compute Engine.
 - Create a HelloWorld container app.
-- Containerize the app using Docker.
-- upload container to the Container Registry
 - Run the container app on Compute Engine.
 
 ## Expected Outcome
