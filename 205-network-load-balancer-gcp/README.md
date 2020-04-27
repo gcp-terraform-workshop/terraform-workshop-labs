@@ -1,15 +1,12 @@
 ## Google Network Load Balancer
 
-In this lab you will implenent a common cloud pattern with Terraform to demonstate how terraform can make setting up these patters a simpler tasks
+In this lab you will implenent another common cloud pattern with Terraform to demonstate how terraform.
 
-The first pattern you will create is a managed instance group. This is a collection of identical VMs that you define via an instance template and set scale on.
+In this lab you are going to build a network load balancer. Also, to deomonstrate how easy it is to extend a terraform model, you will be building the load balancer on top of the model you built in lab 204-vm-instance-group.
 
-
-## Resources created 
-google_compute_instance_template: The instance template assigned to the instance group.
-google_compute_instance_group_manager: The instange group manager that uses the instance template and target pools.
-google_compute_health_check: Monitors the status of each instance VM
-google_compute_firewall: Firewall rule to allow ssh access to the instances.
+## New Resources Created 
+google_compute_forwarding_rule: 
+google_compute_target_pool
 
 ## How to
 
@@ -17,29 +14,16 @@ google_compute_firewall: Firewall rule to allow ssh access to the instances.
 
 Change directory into a folder specific to this challenge.
 
-For example: `cd ~/TerraformWorkshop/103-basic-tf-configurations/`.
+For example: `cd ~/TerraformWorkshop/205-network-load-balancer/`.
 
-We will start with a few of the basic files needed.
+First, copy your solution from 204-vm-instance-group-gcp. 
 
-Create a `main.tf` file to hold our configuration.
-Create a `variables.tf` file to hold some variables to make our code cleaner.
-Create a `terraform.tfvars` file to hold our variable values.
+Create a new file name `loadbalancer.tf` file to hold our load balancer configuration.
 
-### Add base provider and terrafor config blocks
 
-In `main.tf` add the same provider and terraform blocks from 101-connect-gcp.
 
-```hcl
-terraform {
-  backend "gcs" {
-    ...snip...  
-  }
-}
 
-provider "google" {
-    ...snip...  
-}
-```
+
 
 ### Create Variables
 

@@ -78,6 +78,7 @@ resource "google_compute_instance_group_manager" "default" {
 
   zone = "us-east1-b"
 
+  target_pools = [google_compute_target_pool.default.self_link]
   target_size = 2
 
   named_port {
@@ -99,7 +100,6 @@ resource "google_compute_health_check" "mig-health-check" {
   timeout_sec         = 10
   healthy_threshold   = 1
   unhealthy_threshold = 10
-
   http_health_check {
     port         = 8000
     request_path = "/"
