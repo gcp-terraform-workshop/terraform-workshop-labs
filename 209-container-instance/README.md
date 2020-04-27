@@ -5,11 +5,6 @@ In this challenge, you will learn how to deploy a publically avalable container 
 - Create a HelloWorld container app.
 - Run the container app on Compute Engine.
 
-## 
-# Instance with Attached Disk
-
-This example illustrates how to deploy and expose a container to a 
-
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -42,7 +37,7 @@ This example illustrates how to deploy and expose a container to a
 ## Expected Outcome
 A containerized web application that is accessible on a public IP address using port 8080. 
 
-### Create Terraform Configuration
+# Create Terraform Configuration
 
 Change directory into a folder specific to this challenge.
 
@@ -248,7 +243,7 @@ output "ipv4" {
 }
 ```
 
-### Terraform Init and Plan
+## Terraform Init and Plan
 
 Now that your configuration should be completed you will need to run `terraform init`. Upon successful initialization you will then run `terraform plan` to test deployment.
 
