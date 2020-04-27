@@ -1,236 +1,235 @@
 # GCP Container Instance - THIS ONE IS NOT COPMPLETE! 
-In this challenge, you will learn how to deploy a container application on a Windows server using Terraform.
+In this challenge, you will learn how to deploy a publically avalable container application using a module from a repository Terraform.
 
-- Create a VM for containers on Compute Engine.
-
+- Create a VM for containers with Compute Engine.
 - Create a HelloWorld container app.
-
 - Containerize the app using Docker.
-
-- Run the Windows container app on Compute Engine.
+- upload container to the Container Registry
+- Run the container app on Compute Engine.
 
 ## Expected Outcome
-
-
-## How to
+A containerized web application that is accessible on a public IP address using port 8080. 
 
 ### Create Terraform Configuration
 
 Change directory into a folder specific to this challenge.
 
-For example: `cd ~/TerraformWorkshop/101-container-instance/`.
+For example: `cd ~/TerraformWorkshop/209-container-instance/`.
 
-Create a new file called `main.tf` with the following contents:
+Create a new file called `main.tf` with the following contents. Change the file information to reflect your credentials file for project access.
 
-**First add the following block to version pin**
-```hcl
-terraform {
-  required_version = ">= 0.12.6"
-  required_providers {
-    azurerm = "= 1.31"
+```hcl 
+
+provider "google" {
+    credentials = file("YOUR CREDENTIALS FILE")
+}
+
+locals {
+  instance_name = format("%s-%s", var.instance_name, substr(md5(module.gce-container.container.image), 0, 8))
+}
+
+module "gce-container" {
+  source = "github.com/terraform-google-modules/terraform-google-container-vm.git"
+ 
+
+  cos_image_name = var.cos_image_name
+
+  container = {
+    image = "gcr.io/google-samples/hello-app:1.0"
+
+    env = [
+      {
+        name  = "TEST_VAR"
+        value = "Hello World!"
+      },
+    ]
+
+    volumeMounts = [
+      {
+        mountPath = "/cache"
+        name      = "tempfs-0"
+        readOnly  = false
+      },
+    ]
+  }
+
+  volumes = [
+    {
+      name = "tempfs-0"
+
+      emptyDir = {
+        medium = "Memory"
+      }
+    },
+  ]
+
+  restart_policy = "Always"
+}
+
+resource "google_compute_instance" "vm" {
+  project      = var.project_id
+  name         = local.instance_name
+  machine_type = "n1-standard-1"
+  zone         = var.zone
+
+  boot_disk {
+    initialize_params {
+      image = module.gce-container.source_image
+    }
+  }
+
+  network_interface {
+    subnetwork_project = var.subnetwork_project
+    subnetwork         = var.subnetwork
+    access_config {}
+  }
+
+  tags = ["container-vm-example"]
+
+  metadata = {
+    gce-container-declaration = module.gce-container.metadata_value
+  }
+
+  labels = {
+    container-vm = module.gce-container.vm_container_label
+  }
+
+  service_account {
+    email = var.client_email
+    scopes = [
+      "https://www.googleapis.com/auth/cloud-platform",
+    ]
   }
 }
 ```
+Next add the `variables.tf` file below. Make the necessary changes in the first two blocks to reflect your project information;
+```hcl
 
-On to the good stuff:
+
+variable "project_id" {
+  description = "The project ID to deploy resource into"
+  default     = "YOUR PROJECT ID" 
+}
+
+variable "subnetwork_project" {
+  description = "The project ID where the desired subnetwork is provisioned"
+  default     = "YOUR PROJECT ID" 
+}
+
+variable "subnetwork" {
+  description = "The name of the subnetwork to deploy instances into"
+  default     = "default"
+}
+
+variable "instance_name" {
+  description = "The desired name to assign to the deployed instance"
+  default     = "disk-instance-vm-test"
+}
+
+variable "image" {
+  description = "The Docker image to deploy to GCE instances"
+ }
+
+variable "image_port" {
+  description = "The port the image exposes for HTTP requests"
+}
+
+variable "restart_policy" {
+  description = "The desired Docker restart policy for the deployed image"
+}
+
+variable "machine_type" {
+  description = "The GCP machine type to deploy"
+}
+
+variable "zone" {
+  description = "The GCP zone to deploy instances into"
+}
+
+variable "additional_metadata" {
+  type        = map(string)
+  description = "Additional metadata to attach to the instance"
+  default     = {}
+}
+
+variable "client_email" {
+  description = "Service account email address"
+  type        = string
+  default     = ""
+} 
+
+variable "cos_image_name" {
+  type   = string
+  default = ""
+}
+```
+Next we need to add a `tfvars file ` to override the module defaults with the information for your project. 
 
 ```hcl
-resource "random_integer" "main" {
-  min = 500
-  max = 50000
+
+  
+  image            = "gcr.io/google-samples/hello-app:1.0"
+  image_port       = "8080"
+  machine_type     = "cos-stable-77-12371-89-0"
+  restart_policy   = "Always"
+  zone             = "us-east1-b"
+  cos_image_name   = "cos-stable-77-12371-89-0"
+
+```
+Now add an `outputs.tf` file that will provide the information for you to verify/view your deployment after running `terraform apply`.
+
+```hcl
+
+output "vm_container_label" {
+  description = "The instance label containing container configuration"
+  value       = module.gce-container.vm_container_label
 }
 
-resource "azurerm_resource_group" "main" {
-  name     = "PREFIX-aci-helloworld"
-  location = "centralus"
+output "container" {
+  description = "The container metadata provided to the module"
+  value       = module.gce-container.container
 }
 
-resource "azurerm_storage_account" "main" {
-  resource_group_name      = azurerm_resource_group.main.name
-  location                 = azurerm_resource_group.main.location
-  name                     = "acidev${random_integer.main.result}"
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
+output "volumes" {
+  description = "The volume metadata provided to the module"
+  value       = module.gce-container.volumes
 }
 
-resource "azurerm_storage_share" "main" {
-  resource_group_name  = azurerm_resource_group.main.name
-  storage_account_name = azurerm_storage_account.main.name
-  name                 = "aci-test-share"
-  quota                = 1
+output "http_address" {
+  description = "The IP address on which the HTTP service is exposed"
+  value       = google_compute_instance.vm.network_interface.0.access_config.0.nat_ip
 }
 
-resource "azurerm_container_group" "main" {
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
-  name                = "aci-helloworld"
-  ip_address_type     = "public"
-  dns_name_label      = "aci-${random_integer.main.result}"
-  os_type             = "linux"
-
-  container {
-    name   = "helloworld"
-    image  = "microsoft/aci-helloworld"
-    cpu    = "0.5"
-    memory = "1.5"
-    ports {
-      port     = 80
-      protocol = "TCP"
-    }
-
-    environment_variables = {
-      "NODE_ENV" = "testing"
-    }
-
-    volume {
-      name       = "logs"
-      mount_path = "/aci/logs"
-      read_only  = false
-      share_name = azurerm_storage_share.main.name
-
-      storage_account_name = azurerm_storage_account.main.name
-      storage_account_key  = azurerm_storage_account.main.primary_access_key
-    }
-  }
-
-  container {
-    name   = "sidecar"
-    image  = "microsoft/aci-tutorial-sidecar"
-    cpu    = "0.5"
-    memory = "1.5"
-  }
-
-  tags = {
-    environment = "testing"
-  }
+output "http_port" {
+  description = "The port on which the HTTP service is exposed"
+  value       = var.image_port
 }
 
-output "aci-helloworld-fqdn" {
-  value = azurerm_container_group.main.fqdn
+output "instance_name" {
+  description = "The deployed instance name"
+  value       = local.instance_name
+}
+
+output "ipv4" {
+  description = "The public IP address of the deployed instance"
+  value       = google_compute_instance.vm.network_interface.0.access_config.0.nat_ip
 }
 ```
 
 ### Terraform Init and Plan
 
-Running an `init` should look something like this:
-
-```sh
-terraform init
-
-...
-
-Terraform has been successfully initialized!
-```
-
-Running a `plan` should look something like this:
-
-```sh
-terraform plan
-Terraform will perform the following actions:
-
-  + azurerm_container_group.main
-      name:                                       "PREFIX-aci-helloworld"
-      ...
-
-  + azurerm_resource_group.main
-      name:                                       "PREFIX-aci-helloworld"
-      ...
-
-  + azurerm_storage_account.main
-      name:                                       "<computed>"
-      ...
-
-  + azurerm_storage_share.main
-      name:                                       "aci-test-share"
-      ...
+Now that your configuration should be completed you will need to run `terraform init`. Upon successful initialization you will then run `terraform plan` to test deployment.
 
 
-Plan: 4 to add, 0 to change, 0 to destroy.
-```
-
-### Terraform Apply
+## Terraform Apply
 
 Running an `apply` should look just like a plan except you are prompted for approval to apply.
 Type 'yes' and let Terraform build your infrastructure.
 
-### Navigate to the Azure Portal
+## Review the resources
 
-Open a browser and navigate to the the [Azure Portal](https://portal.azure.com) and you should see your resource group and its resources.
-![](img/2018-05-07-18-08-30.png)
+Now that you have successfully deployed the containerize application you should review the resources that were created. 
 
-### Find the Full Qualified Domain Name
-
-Click into the Azure Container Instance and take note of its FQDN.
-![](img/2018-05-07-18-11-33.png)
-
-### Navigate to the Web App
-
-Navigate to that URL and you should see the following:
-![](img/2018-05-07-18-13-28.png)
-
-### View the Logs
-Back in the Azure Portal, navigate to the Azure Container Instance and view its logs by clicking on the "Containers" tab:
-![](img/2018-05-07-18-20-56.png)
-
-Wait a few seconds and refresh the logs, you should see more requests due to the sidecar container.
-
-## A Step Further (optional)
-
-Azure Container Instances also support windows containers!
-
-### Create a Windows Container
-
-Create another resource by adding the following to your existing `main.tf` file:
-
-```hcl
-resource "azurerm_container_group" "windows" {
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
-  name                = "aci-iis"
-  ip_address_type     = "public"
-  dns_name_label      = "aci-iis-${random_integer.main.result}"
-  os_type             = "windows"
-
-  container {
-    name   = "dotnetsample"
-    image  = "microsoft/iis"
-    cpu    = "0.5"
-    memory = "1.5"
-    ports {
-      port     = 80
-      protocol = "TCP"
-    }
-  }
-
-  tags = {
-    environment = "testing"
-  }
-}
-
-output "aci-iis-fqdn" {
-  value = azurerm_container_group.windows.fqdn
-}
-```
-
-:clock1:
-
-### Run Terraform Workflow
-
-Running an `init`, `plan`, and `apply` should yield another Container Instance.
-
-Navigating back to the Azure Portal to get the FQDN and following that URL should get you the very familiar IIS default sites page:
-![](img/2018-05-07-18-29-10.png)
-
-## Cleanup
+## Final step - Cleanup
 
 Run a `terraform destroy` when you are done exploring.
-
-## Advanced areas to explore
-
-1. What do you think will happen if you try to combine the Azure Container Instances above (Linux and Windows) into one?
-2. Replicate the Terraform above using a single Azure CLI command. Which is easier?
-
-## Resources
-
-- [Azurerm Container Group Docs](https://www.terraform.io/docs/providers/azurerm/r/container_group.html)
-- [Azure Container Instances](https://azure.microsoft.com/en-us/services/container-instances)

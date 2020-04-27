@@ -1,28 +1,81 @@
 provider "google" {
-  version = "3.5.0"
-
-  credentials = file("terraform.json")
-
-  project = "terraform-containers"
-  region  = "us-central1"
-  zone    = "us-central1-c"
+    credentials = file("terraform.json")
 }
 
-resource "google_compute_network" "vpc_network" {
-  name = "terraform-network"
+locals {
+  instance_name = format("%s-%s", var.instance_name, substr(md5(module.gce-container.container.image), 0, 8))
 }
 
-data "google_container_registry_repository" "terraform-containers" {
-}
+module "gce-container" {
+  source = "github.com/terraform-google-modules/terraform-google-container-vm.git"
+ 
 
-resource "google_compute_firewall" "default" {
-  name       = "default-firewall"
-  network    = "terraform-network"
+  cos_image_name = var.cos_image_name
 
-  allow {
-    protocol = "tcp"
-    ports    = ["80", "8080", "1000-2000"]
+  container = {
+    image = "gcr.io/google-samples/hello-app:1.0"
+
+    env = [
+      {
+        name  = "TEST_VAR"
+        value = "Hello World!"
+      },
+    ]
+
+    volumeMounts = [
+      {
+        mountPath = "/cache"
+        name      = "tempfs-0"
+        readOnly  = false
+      },
+    ]
   }
 
-  source_ranges = ["0.0.0.0/0"]
+  volumes = [
+    {
+      name = "tempfs-0"
+
+      emptyDir = {
+        medium = "Memory"
+      }
+    },
+  ]
+
+  restart_policy = "Always"
+}
+
+resource "google_compute_instance" "vm" {
+  project      = var.project_id
+  name         = local.instance_name
+  machine_type = "n1-standard-1"
+  zone         = var.zone
+
+  boot_disk {
+    initialize_params {
+      image = module.gce-container.source_image
+    }
+  }
+
+  network_interface {
+    subnetwork_project = var.subnetwork_project
+    subnetwork         = var.subnetwork
+    access_config {}
+  }
+
+  tags = ["container-vm-example"]
+
+  metadata = {
+    gce-container-declaration = module.gce-container.metadata_value
+  }
+
+  labels = {
+    container-vm = module.gce-container.vm_container_label
+  }
+
+  service_account {
+    email = var.client_email
+    scopes = [
+      "https://www.googleapis.com/auth/cloud-platform",
+    ]
+  }
 }
