@@ -21,106 +21,43 @@ First, copy your solution from 204-vm-instance-group-gcp.
 Create a new file name `loadbalancer.tf` file to hold our load balancer configuration.
 
 
+## Add Configuration for Load Balancer
 
-## add to main
+In your `loadbalancer.tf` file, add the following new resources
+
+```hcl
+resource "google_compute_forwarding_rule" "default" {
+  project               = var.project_id
+  name                  = "group1-lb"
+  target                = google_compute_target_pool.default.self_link
+  load_balancing_scheme = "EXTERNAL"
+}
+
+resource "google_compute_target_pool" "default" {
+  project          = var.project_id
+  name             = "group1-lb"
+  region           = "us-east1"
+  session_affinity = "NONE"
+}
+```
+
+## Update main.tf
+
+In `main.tf' we need to update the google compute instance manager so the instance manager knows that it is part of a load balancer target pool.
+In `main.tf' update the google_compute_instance_group_manager by adding the following argument and value
+
+```hcl
   target_pools = [google_compute_target_pool.default.self_link]
-
-
-### Create Variables
-
-In variables.tf define the following variables that will help keep our code clean:
-
-```hcl
-variable "project_id" {
-    description = "The GCP project id where the resources will be created"
-    type = string
-}
-
-variable "region" {
-    default = "us-east1"
-    description = "GCP region the resources will be created in"
-    type = string
-}
-
-variable "svc_acct_email" {
-    default = ""
-    description = "email account for VM service account"
-    type = string
-}
 ```
 
-### Settings the Variable Values
+### Run Terraform Workflow
 
-In terraform.tfvars set values for the variables you defined in variables.tf
-```hcl
-region = "us-east1"
-project_id = "[set this to the project id from 101-connect-gcp]"
-svc_acct_email = "[set this to the project email address from 101-connect-gcp]"
+Run `terraform init` since this is the first time we are running Terraform from this directory.
 
-```
-
-### Create Terraform config
-
-With your variables setup, you can now begin to create the terraform configuration, you will do this in main.tf
-
-### Add compute instance template.
-
-In previous labs, you have created a single virtual machine. Now, you are going to define a template from which many identical virtual machines can be created.
-
-Add the following block to your main.tf file. also, copy the `vm_startup.txt` file from 201-common-providers-gcp lab into the same folder. 
+Run `terraform plan` and check that everything is entered correctly. Your output should look similar to this. If you output shows fewer resources being created, there should be six, then you may not have run 'terraform destroy' after finishing up lab 204. Please go back to the lab 204 folder and run `terraform destroy` now.
 
 ```hcl
-resource "google_compute_instance_template" "default" {  
-  project     = var.project_id
-  name_prefix = "default-"
-
-  machine_type = "f1-micro"
-
-  region = "us-east1"
-
-  tags = ["allow-service"]
-
-  labels = {}
-
-  network_interface {
-    network            = "default"
-    subnetwork         = "default"
-    access_config {// Ephemeral IP
-    }
-  }
-
-  can_ip_forward = false
-
-  disk {
-    auto_delete  = true
-    boot         = true
-    source_image = "ntu-1804-lts"
-    type         = "PERSISTENT"
-    disk_type    = "pd-ssd"
-    mode         = "READ_WRITE"
-  }
-
-  service_account {
-    email = var.svc_acct_email 
-    scopes = ["userinfo-email", "compute-ro", "storage-ro"]
-  }
-
-  metadata_startup_script = file("vm_startup.txt")
-
-  scheduling {
-    preemptible       = false
-    automatic_restart = true
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-```
-
-Go ahead and run `terraform plan` and check that everything is entered correctly. Your output should look similar to this
-
-```hcl
+terraform plan
 Refreshing Terraform state in-memory prior to plan...
 The refreshed state will be used to calculate this plan, but will not be
 persisted to local or remote state storage.
@@ -134,11 +71,121 @@ Resource actions are indicated with the following symbols:
 
 Terraform will perform the following actions:
 
+  # google_compute_firewall.default will be created
+  + resource "google_compute_firewall" "default" {
+      + creation_timestamp = (known after apply)
+      + destination_ranges = (known after apply)
+      + direction          = (known after apply)
+      + id                 = (known after apply)
+      + name               = "default-firewall"
+      + network            = "default"
+      + priority           = 1000
+      + project            = (known after apply)
+      + self_link          = (known after apply)
+      + source_ranges      = [
+          + "0.0.0.0/0",
+        ]
+
+      + allow {
+          + ports    = [
+              + "80",
+              + "8000",
+              + "8080",
+            ]
+          + protocol = "tcp"
+        }
+      + allow {
+          + ports    = []
+          + protocol = "icmp"
+        }
+    }
+
+  # google_compute_forwarding_rule.default will be created
+  + resource "google_compute_forwarding_rule" "default" {
+      + creation_timestamp    = (known after apply)
+      + id                    = (known after apply)
+      + ip_address            = (known after apply)
+      + ip_protocol           = (known after apply)
+      + ip_version            = (known after apply)
+      + load_balancing_scheme = "EXTERNAL"
+      + name                  = "group1-lb"
+      + network               = (known after apply)
+      + network_tier          = (known after apply)
+      + project               = "dazzling-mantra-271319"
+      + region                = (known after apply)
+      + self_link             = (known after apply)
+      + service_name          = (known after apply)
+      + subnetwork            = (known after apply)
+      + target                = (known after apply)
+    }
+
+  # google_compute_health_check.mig-health-check will be created
+  + resource "google_compute_health_check" "mig-health-check" {
+      + check_interval_sec  = 30
+      + creation_timestamp  = (known after apply)
+      + healthy_threshold   = 1
+      + id                  = (known after apply)
+      + name                = "my-instance-group-hc"
+      + project             = "dazzling-mantra-271319"
+      + self_link           = (known after apply)
+      + timeout_sec         = 10
+      + type                = (known after apply)
+      + unhealthy_threshold = 10
+
+      + http_health_check {
+          + port         = 8000
+          + proxy_header = "NONE"
+          + request_path = "/"
+        }
+    }
+
+  # google_compute_instance_group_manager.default will be created
+  + resource "google_compute_instance_group_manager" "default" {
+      + base_instance_name = "base-instance"
+      + description        = "compute VM Instance Group"
+      + fingerprint        = (known after apply)
+      + id                 = (known after apply)
+      + instance_group     = (known after apply)
+      + instance_template  = (known after apply)
+      + name               = "my-default-instance-group"
+      + project            = "dazzling-mantra-271319"
+      + self_link          = (known after apply)
+      + target_pools       = (known after apply)
+      + target_size        = 2
+      + update_strategy    = (known after apply)
+      + wait_for_instances = false
+      + zone               = "us-east1-b"
+
+      + auto_healing_policies {
+          + health_check      = (known after apply)
+          + initial_delay_sec = 30
+        }
+
+      + named_port {
+          + name = "http"
+          + port = 80
+        }
+
+      + update_policy {
+          + max_surge_fixed         = (known after apply)
+          + max_surge_percent       = (known after apply)
+          + max_unavailable_fixed   = (known after apply)
+          + max_unavailable_percent = (known after apply)
+          + min_ready_sec           = (known after apply)
+          + minimal_action          = (known after apply)
+          + type                    = (known after apply)
+        }
+
+      + version {
+          + instance_template = (known after apply)
+        }
+    }
+
   # google_compute_instance_template.default will be created
   + resource "google_compute_instance_template" "default" {
       + can_ip_forward          = false
       + id                      = (known after apply)
-      + machine_type            = "f1-micro"
+      + machine_type            = "n1-standard-1"
       + metadata_fingerprint    = (known after apply)
       + metadata_startup_script = <<~EOT
             #!/bin/bash
@@ -193,7 +240,7 @@ Terraform will perform the following actions:
           + disk_type    = "pd-ssd"
           + interface    = (known after apply)
           + mode         = "READ_WRITE"
-          + source_image = "ntu-1804-lts"
+          + source_image = "ubuntu-os-cloud/ubuntu-1804-lts"
           + type         = "PERSISTENT"
         }
 
@@ -226,7 +273,18 @@ Terraform will perform the following actions:
         }
     }
 
-Plan: 1 to add, 0 to change, 0 to destroy.
+  # google_compute_target_pool.default will be created
+  + resource "google_compute_target_pool" "default" {
+      + id               = (known after apply)
+      + instances        = (known after apply)
+      + name             = "group1-lb"
+      + project          = "dazzling-mantra-271319"
+      + region           = "us-east1"
+      + self_link        = (known after apply)
+      + session_affinity = "NONE"
+    }
+
+Plan: 6 to add, 0 to change, 0 to destroy.
 
 ------------------------------------------------------------------------
 
@@ -235,98 +293,28 @@ can't guarantee that exactly these actions will be performed if
 "terraform apply" is subsequently run.
 ```
 
-The next resource you need to create is the managed instance group manager. This resource defines the setup and on configuration of your group of virtual machines. You will also create a basic health check resource to check on the operational status of each VM instance.
-
-Once again, please put this code into your main.tf file.
-
-```hcl
-
-resource "google_compute_instance_group_manager" "default" {
-  project            = var.project_id
-  name               = "my_default_Instance_Group"
-  description        = "compute VM Instance Group"
-  wait_for_instances = false
-
-  base_instance_name = "default-"
-
-  version {
-    instance_template = google_compute_instance_template.default.self_link
-  }
-  
-  zone = "us-east1-a"
-
-  target_size = 2
-
-  named_port {
-    name = "http"
-    port = 80
-  }
-
-  auto_healing_policies {
-    health_check      = google_compute_health_check.mig-health-check.self_link
-    initial_delay_sec = 30
-  }
-}
-
-```
-Finally, you need to create a google_compute_health_check and a google_compute_firewall.
-The health check is a monitoring resource the will regularly check an http address on each vm to see if it gets a response. In a production system, you would set automated reactions to failures on the health checks based on your business needs.
-The firewall is similar to other firewalls you've already created in previous labs.
-
-In your main.tf, add the following blocks
-
-```hcl
-resource "google_compute_health_check" "mig-health-check" {
-  name    = "my-instance-group-hc"
-  project = var.project_id
-
-  check_interval_sec  = 30
-  timeout_sec         = 10
-  healthy_threshold   = 1
-  unhealthy_threshold = 10
-
-  http_health_check {
-    port         = 8000
-    request_path = "/"
-  }
-}
-
-resource "google_compute_firewall" "default" {
-  name       = "default-firewall"
-  network    = "default"
-
-  allow {
-    protocol = "icmp"
-  }
-
-  allow {
-    protocol = "tcp"
-    ports    = ["80", "8000", "8080"]
-  }
-
-
-  source_ranges = ["0.0.0.0/0"]
-}
-
-```
-
-### Run Terraform Workflow
-
-Run `terraform init` since this is the first time we are running Terraform from this directory.
-
-Run `terraform plan` where you should see the plan of all the new resources.
-
 Run `terraform apply` to create all the infrastructure.
 
-It takes a while for the instance group to fully spin up and the startup script to execute.
+Once the run completes you shoudl see output similar to this
+
+```hcl
+Apply complete! Resources: 6 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+external_ip = 35.229.46.153
+target_pool = https://www.googleapis.com/compute/v1/projects/dazzling-mantra-271319/regions/us-east1/targetPools/group1-lb
+```
+
+The `external_ip' is the public ip address of yoru new load balancer. In  few minutes, you will be able to test it. However, It takes a while for the instance group to fully spin up and the startup script to execute.
 
 Open a browser and navigate to your good console. Once logged in, head over to the Computer Engine | Instance Groups section.
 ![](img/Img1.png)
 
-Once there clikc on your new instance group to view the details. The instances will initially show a status of being 'verified'. You need to wait until this is complete and the console shows this:
+Once there click on your new instance group to view the details. The instances will initially show a status of being 'verified'. You need to wait until this is complete and the console shows this:
 ![](img/Img2.png)
 
-Now, you can copy either external ip address and in a new browser window navigate to the following site to see some cute kittens!
+Now, you can load the external ip address in a new browser window navigate to the site to see some cute kittens!
 
 `http://<external ip>:8000`
 
@@ -338,4 +326,5 @@ When you are done, run `terraform destroy` to remove everything we created.
 
 1. Change the instance count on `google_compute_instance_group_manager` 
 2. Change other parameters to see how the instances change [Google Compute Instance Manager](https://www.terraform.io/docs/providers/google/r/compute_instance_group_manager.html) data resource.
+3. Look at other options for load balancing and forwarding.  [Google Compute Forwarding Rule](https://www.terraform.io/docs/providers/google/r/compute_forwarding_rule.html). Try limiting the forwarding to only port 8000.
 
