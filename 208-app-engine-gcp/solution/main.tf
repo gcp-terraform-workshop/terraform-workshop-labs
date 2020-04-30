@@ -60,5 +60,3 @@ resource "google_storage_bucket_object" "object" {
   bucket = google_storage_bucket.bucket.name
   source = "./file/hello_world.zip"
 }
-
-
