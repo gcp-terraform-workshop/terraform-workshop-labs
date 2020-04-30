@@ -1,0 +1,29 @@
+{
+  "name": "nodejs-docs-samples-iot-manager",
+  "version": "0.0.1",
+  "description": "Example of Cloud IoT device administration",
+  "main": "manager.js",
+  "license": "Apache-2.0",
+  "author": "Google LLC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GoogleCloudPlatform/nodejs-docs-samples.git"
+  },
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "scripts": {
+    "test": "npm -- run system-test",
+    "system-test": "mocha system-test/*.test.js --timeout=600000"
+  },
+  "dependencies": {
+    "@google-cloud/iot": "^2.0.0",
+    "@google-cloud/pubsub": "^1.2.0",
+    "googleapis": "^48.0.0",
+    "yargs": "^15.1.0"
+  },
+  "devDependencies": {
+    "mocha": "^7.0.0",
+    "uuid": "^7.0.0"
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "name": "endpoints-grpc",
+  "description": "Endpoints Node.js gRPC sample for Google App Engine",
+  "version": "0.0.1",
+  "private": true,
+  "license": "Apache-2.0",
+  "author": "Google Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GoogleCloudPlatform/nodejs-docs-samples.git"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "mocha --exit system-test/*.test.js --timeout=60000"
+  },
+  "dependencies": {
+    "google-auth-library": "^6.0.0",
+    "grpc": "^1.18.0",
+    "jsonwebtoken": "^8.2.0",
+    "yargs": "^15.0.0"
+  },
+  "devDependencies": {
+    "delay": "^4.2.0",
+    "mocha": "^7.0.0"
+  },
+  "cloud-repo-tools": {
+    "requiresKeyFile": true,
+    "requiresProjectId": true,
+    "test": {
+      "app": {
+        "requiredEnvVars": [
+          "ENDPOINTS_API_KEY",
+          "ENDPOINTS_GCE_HOST",
+          "ENDPOINTS_GKE_HOST",
+          "ENDPOINTS_SERVICE_NAME"
+        ]
+      },
+      "build": {
+        "requiredEnvVars": [
+          "ENDPOINTS_API_KEY",
+          "ENDPOINTS_GCE_HOST",
+          "ENDPOINTS_GKE_HOST",
+          "ENDPOINTS_SERVICE_NAME"
+        ]
+      }
+    }
+  }
+}
