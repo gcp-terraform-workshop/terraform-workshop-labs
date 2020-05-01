@@ -1,3 +1,17 @@
+
+1. Create new GCP Project
+2. Create Service account in new project with Owner role
+    a. Grant storage object viewer role
+    b. Grant owner role
+3. Enable Cloud Resource Manager API
+4. Enable App Engine Admin API
+
+5. update Terraform.json with new credentials
+6. Update project Id in main.tf provider block
+7. Run terraform init
+8. Run terraform plan
+9. Run terraform apply
+
 ## Introduction
 This tutorial shows you how to deploy a sample application to App Engine using the gcloud command.
 
