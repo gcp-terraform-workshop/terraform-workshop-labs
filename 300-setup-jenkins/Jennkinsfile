@@ -9,31 +9,37 @@ pipeline {
 
     stage('Clone repo') {
         steps {
-            git url: 'https://github.com/terraform-providers/terraform-provider-google.git'
+            git url: 'https://github.com/terraform-google-modules/docs-examples.git'
         }
     }
 
     stage('Terraform Init') { 
       steps {
-        dir  ('examples/two-tier') {
-            sh 'terraform init' 
-        }
+            dir  ('./instance_with_ip') {
+                sh 'terraform init' 
+            }
+          
       }
     }
     
     stage('Terraform Plan') { 
       steps {
-        dir  ('examples/two-tier') {
-            sh 'ls -la && pwd'
-            sh 'terraform plan -no-color -out=create.tfplan' 
-        }
+           withCredentials([file(credentialsId: 'google-sa', variable: 'FILE')]) {
+            dir  ('./instance_with_ip') {
+                sh 'GOOGLE_APPLICATION_CREDENTIALS=$FILE terraform plan -no-color -out=create.tfplan' 
+            }
+       }
       }
     }
 
 
     stage ('Terraform Apply') {
      steps{
-      sh "terraform --version"
+           withCredentials([file(credentialsId: 'google-sa', variable: 'FILE')]) {
+            dir  ('./instance_with_ip') {
+      sh "sh GOOGLE_APPLICATION_CREDENTIALS=$FILE terraform plan -no-color -out=create.tfplan"
+     }
+           }
      }
     }
   }
