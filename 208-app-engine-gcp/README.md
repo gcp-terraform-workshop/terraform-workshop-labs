@@ -73,7 +73,7 @@ resource "google_storage_bucket_object" "object" {
 }
 ```
 
- 7. Update project Id & Bucket Name in variables.tf 
+ 7. Use the code below for the variables.tf file. Make sure you update the project Id & bucket name in variables.tf 
 
 
  ```hcl
@@ -92,7 +92,7 @@ resource "google_storage_bucket_object" "object" {
 11. Run terraform apply
 
 ## Visit your app
-Congratulations! Your app has been deployed. The default URL of your app is a subdomain on appspot.com that starts with your project's ID: YOUR PROJECT NAME.appspot.com.
+Congratulations! Your app has been deployed. The default URL of your app is a subdomain on appspot.com that starts with your project's ID: YOUR_PROJECT_NAME.appspot.com.
 
 Try visiting your deployed application.
 
