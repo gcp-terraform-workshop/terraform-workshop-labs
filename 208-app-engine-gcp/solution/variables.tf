@@ -1,9 +1,9 @@
   variable "gcp_project" {
-  default = "rocco2022"
+  default = "Your Project Info Here"
   }
 
   variable "google_storage_bucket" {
-  default = "app-eng-1234"
+  default = "Your Bucket Name Here"
   }
   
   
