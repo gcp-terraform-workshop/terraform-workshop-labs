@@ -73,7 +73,7 @@ resource "google_storage_bucket_object" "object" {
 }
 ```
 
- 7. Use the code below for the variables.tf file. Make sure you update the project Id & bucket name in variables.tf 
+ 7. Use the code below for the `variables.tf` file. Make sure you update the project Id & bucket name in variables.tf 
 
 
  ```hcl
