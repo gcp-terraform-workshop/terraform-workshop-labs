@@ -1,87 +1,98 @@
 
-1. Create new GCP Project
-2. Create Service account in new project with Owner role
-    a. Grant storage object viewer role
-    b. Grant owner role
-3. Enable Cloud Resource Manager API
-4. Enable App Engine Admin API
-
-5. update Terraform.json with new credentials
-6. Update project Id in main.tf provider block
-7. Run terraform init
-8. Run terraform plan
-9. Run terraform apply
-
 ## Introduction
-This tutorial shows you how to deploy a sample application to App Engine using the gcloud command.
+In this lab you will deploy a sample Node.js application to App Engine using Terraform.
 
-Here are the steps you will be taking.
+## Steps to follow
+Using the portal do the following steps first:
+  1. Create new GCP Project
+  2. Create Service account in new project with Owner role
+  3. Update Terraform.json with "key" for new credentials
+  4. Enable Cloud Resource Manager API
+  5. Enable App Engine Admin API
 
-Create a project
+## Next, create the Teraform Configuration files/folders required:
+Working folder should look like this:
+    
+    Files (folder)
+    main.tf
+    variables.tf
+    terraform.json  
+ 
+Change/create directory into a folder specific to this challenge.
 
-Projects bundle code, VMs, and other resources together for easier development and monitoring.
+For example: cd ~/TerraformWorkshop/208-app-engine
 
-Build and run your "Hello, world!" app
+6. Create a new file called `main.tf` with the following contents. 
 
-You will learn how to run your app using Cloud Shell, right in your browser. At the end, you'll deploy your app to the web using the gcloud command.
+```hcl
+provider "google" {
+  credentials = file("terraform.json")
+  project = var.gcp_project
+}
 
-After the tutorial...
+data "google_project" "project" {}
 
-Your app will be real and you'll be able to experiment with it after you deploy, or you can remove it and start fresh.
+resource "google_app_engine_application" "app" {
+  project     = data.google_project.project.project_id
+  location_id = "us-central"
+}
 
-## 
-Begin by creating a new project or selecting an existing project for this tutorial.
+resource "google_app_engine_standard_app_version" "myapp_v1" {
+  version_id = "v1"
+  service    = "default"
+  runtime    = "nodejs10"
+  project    = data.google_project.project.project_id
 
-clone the sample code
-Use Cloud Shell to clone and navigate to the "Hello World" code. The sample code is cloned from your project repository to the Cloud Shell.
+  entrypoint {
+    shell = "node ./app.js"
+  }
 
-Note: If the directory already exists, remove the previous files before cloning.
+  deployment {
+    zip {
+      source_url = "https://storage.googleapis.com/${google_storage_bucket.bucket.name}/${google_storage_bucket_object.object.name}"
+    }
+  }
 
-git clone \
-    https://github.com/GoogleCloudPlatform/golang-samples
-Then, switch to the tutorial directory:
+  env_variables = {
+    port = "8080"
+  }
 
-cd \
-    golang-samples/appengine/go11x/h
+  delete_service_on_destroy = true
+}
 
-    Configuring your deployment
-You are now in the main directory for the sample code. We'll look at the files that configure your application.
+resource "google_storage_bucket" "bucket" {
+  name    = var.google_storage_bucket
+  project = data.google_project.project.project_id
 
-Exploring the application
-Enter the following command to view your application code:
+}
 
-cat helloworld.go
-Exploring your configuration
-App Engine uses YAML files to specify a deployment's configuration. app.yaml files contain information about your application, like the runtime environment, URL handlers, and more.
+resource "google_storage_bucket_object" "object" {
+  name   ="hello_world.zip"
+  bucket = google_storage_bucket.bucket.name
+  source = "./file/hello_world.zip"
+}
+```
 
-Enter the following command to view your configuration file:
+ 7. Update project Id & Bucket Name in variables.tf 
 
-cat app.yaml
 
-----
-## Testing your app
-Test your app on Cloud Shell
-Cloud Shell lets you test your app before deploying to make sure it's running as intended, just like debugging on your local machine.
+ ```hcl
+   variable "gcp_project" {
+  default = "YOUR PROJECT NAME HERE"
+  }
 
-To test your app enter the following:
+  variable "google_storage_bucket" {
+  default = "YOUR BUCKET NAME HERE"
+  }
+  ```
+  8. Copy the lab hello-world.zip file into the folder labled "file"
 
-go run .
-Preview your app with "Web preview"
-Your app is now running on Cloud Shell. You can access the app by clicking the Web preview  button at the top of the Cloud Shell pane and choosing Preview on port 8080.
+ 9. Run terraform init
+10. Run terraform plan
+11. Run terraform apply
 
-## Deploying to App Engine
-Create an application
-To deploy your app, you need to create an app in a region:
-
-gcloud app create
-Note: If you already created an app, you can skip this step.
-
-Deploying with Cloud Shell
-You can use Cloud Shell to deploy your app. To deploy your app enter the following:
-
-gcloud app deploy
-Visit your app
-Congratulations! Your app has been deployed. The default URL of your app is a subdomain on appspot.com that starts with your project's ID: terraform-containers.appspot.com.
+## Visit your app
+Congratulations! Your app has been deployed. The default URL of your app is a subdomain on appspot.com that starts with your project's ID: YOUR PROJECT NAME.appspot.com.
 
 Try visiting your deployed application.
 
