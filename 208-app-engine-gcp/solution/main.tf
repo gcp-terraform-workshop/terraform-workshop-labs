@@ -1,6 +1,6 @@
 provider "google" {
   credentials = file("terraform.json")
-  project = "neon-feat-275918"
+  project = var.gcp_project
 }
 
 data "google_project" "project" {}
@@ -33,9 +33,8 @@ resource "google_app_engine_standard_app_version" "myapp_v1" {
   delete_service_on_destroy = true
 }
 
-
 resource "google_storage_bucket" "bucket" {
-  name    = "insight20eb4"
+  name    = var.google_storage_bucket
   project = data.google_project.project.project_id
 
 }
@@ -45,3 +44,4 @@ resource "google_storage_bucket_object" "object" {
   bucket = google_storage_bucket.bucket.name
   source = "./file/hello_world.zip"
 }
+
