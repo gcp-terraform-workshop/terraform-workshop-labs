@@ -130,7 +130,7 @@ provider "google" {
 
 ```
 ### Labels (Tags)
-Lets add a Label to identify our environment. add the following to the resource block under the location attribute.
+Lets add a Label to identify our environment. add the following to the storage bucket resource block under the location attribute.
 ```hcl
   labels = {
     environment = "dev"
