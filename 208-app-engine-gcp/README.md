@@ -5,8 +5,8 @@ In this lab you will deploy a sample Node.js application to App Engine using Ter
 ## Steps to follow
 Using the portal do the following steps first:
   1. Create new GCP Project
-  2. Create Service account in new project with Owner role
-  3. Update Terraform.json with "key" for new credentials
+  2. Create Service Account in new project with "Owner" role
+  3. Update `terraform.json` with "key" for new credentials
   4. Enable Cloud Resource Manager API
   5. Enable App Engine Admin API
 
@@ -85,7 +85,7 @@ resource "google_storage_bucket_object" "object" {
   default = "YOUR BUCKET NAME HERE"
   }
   ```
-  8. Copy the lab hello-world.zip file into the folder labled "file"
+  8. Copy the lab hello-world.zip file into the folder labeled "file"
 
  9. Run terraform init
 10. Run terraform plan
@@ -108,7 +108,7 @@ Go to the Settings page.
 
 Click Disable Application.
 
-This is sufficient to stop billing from this app. More details on the relationship between apps and projects and how to manage each can be found here.
+This is sufficient to stop billing from this app. 
 
 ## Delete your project
 If you would like to completely delete the app, you must delete the project in the Manage resources page. This is not reversible, and any other resources you have in your project will be destroyed:
