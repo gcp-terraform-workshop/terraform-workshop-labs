@@ -20,7 +20,7 @@ In this challenge, you will:
 
 Lets create a folder specific to this challenge.
 
-For example: `cd ~/TerraformWorkshop/101-variables-gcp/`. Now run `terraform init` to initialize the folder.
+For example: `cd ~/TerraformWorkshop/102-variables-gcp/`. Now run `terraform init` to initialize the folder.
 
 ### Defining Variables
 
