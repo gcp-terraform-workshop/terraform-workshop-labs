@@ -130,13 +130,14 @@ provider "google" {
 
 ```
 ### Labels (Tags)
+Lets add a Label to identify our environment. add the following to the resource block under the location attribute.
+```hcl
+  labels = {
+    environment = "dev"
+```
+re-run terraform plan and then terraform apply to see the result.
 
-
-
-
-
-
-### Variable precedent order
+### Things to remember for Variable precedent order
 - Environment Variable
 - Files (Variables.tf, terraform.tfvars or *.auto.tfvars)
 - CLI input.
