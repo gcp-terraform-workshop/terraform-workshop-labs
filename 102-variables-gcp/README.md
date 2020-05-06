@@ -20,7 +20,7 @@ In this challenge, you will:
 
 Lets create a folder specific to this challenge.
 
-For example: `cd ~/TerraformWorkshop/102-variables-gcp/`. Now run `terraform init` to initialize the folder.
+For example: `cd ~/TerraformWorkshop/102-variables-gcp/`. 
 
 ### Defining Variables
 
@@ -80,7 +80,7 @@ The most common input types for variables used in Terraform code are:
  - Numbers
  - Lists
 
-Let's go back to out `variables.tf` file and provide the `type =` for the following variable names "project" to `number`.
+Let's go back to our `variables.tf` file and provide the `type =` for the following variable names "project" to `number`.
 
 ```hcl
 variable "project" {
@@ -88,6 +88,7 @@ variable "project" {
  }
 
 ```
+Now run `terraform init` to initialize the folder.
 Now lets run `terraform plan`. Notice that you get an error when you enter our project ID. 
 ```hcl
 $ terraform plan
@@ -113,7 +114,6 @@ This time provide the valid project name from GCP and Terraform will complete th
 Let's create a `List` that identifies the `zones` in our region that we would like to create resources in and add it to the `variables.tf` file. 
  
 ```hcl
-
 variable "zone" {
  type = list(string)
   default = ["us-east1-b","us-east1-c","us-east1-d"]
