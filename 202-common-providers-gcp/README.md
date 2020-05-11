@@ -18,12 +18,11 @@ Edit everywhere you see /home/${var.user}/ change it to /tmp/
 Now we need to create our file resource. 
 Replace all the SCRIPT text in the `main.tf` with this simple line:
 This tells terrafrom to render the contents of vm_startup.txt into metadata_startup_script
-the file function will insert the template text into the main.tf config.
+the file function will insert the template text into the `main.tf` config.
 
 ```hcl
 metadata_startup_script = file("vm_startup.txt")
 }
-
 ```
 In order to have some dynamic values in your startup-script we will need to use the templatefile() function instead of file().
 Create a new folder and copy you `main.tf` and `vm_startup.txt` files into the new folder.
@@ -37,5 +36,4 @@ Update the metadata_startup_script like this:
 ```hcl
 metadata_startup_script = templatefile("vm_startup.txt", {user = var.user})
 }
-
 ```
