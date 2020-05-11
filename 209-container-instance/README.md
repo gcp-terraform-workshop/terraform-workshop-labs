@@ -35,7 +35,7 @@ In this challenge, you will learn how to deploy a publicly avalable container ap
 
 
 ## Expected Outcome
-A containerized web application that is accessible on a public IP address using port 8080. 
+A containerized web application that is accessible on a public IP address. 
 
 # Create Terraform Configuration
 
