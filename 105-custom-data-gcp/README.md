@@ -21,7 +21,7 @@ For example: `cd ~/TerraformWorkshop/101-custom-data/`.
 
 We will start with a few of the basic resources needed.
 
-Create a `main.tf` file to hold our configuration.
+Lets create a `main.tf` and `variables.tf` file to hold our configuration.
 
 ### Create Variables
 
@@ -49,7 +49,7 @@ variable "user" {
 
 ### Create Virtual Machine Firewall
 
-Create a VM firewall to allow access to the VM. This will allow incoming icmp protocol (ping)
+Next create a VM firewall to allow access to the VM. This will allow incoming icmp protocol (ping)
 and incoming tcp connections on ports 80, 8000, and 8080
 
 ```hcl
