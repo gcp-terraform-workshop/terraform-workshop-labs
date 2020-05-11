@@ -247,7 +247,7 @@ can't guarantee that exactly these actions will be performed if
 
 The next resource you need to create is the managed instance group manager. This resource defines the setup and on configuration of your group of virtual machines. You will also create a basic health check resource to check on the operational status of each VM instance.
 
-Once again, please put this code into your main.tf file.
+Once again, please put this code into your `main.tf file`.
 
 ```hcl
 
@@ -283,7 +283,7 @@ Finally, you need to create a google_compute_health_check and a google_compute_f
 The health check is a monitoring resource the will regularly check an http address on each vm to see if it gets a response. In a production system, you would set automated reactions to failures on the health checks based on your business needs.
 The firewall is similar to other firewalls you've already created in previous labs.
 
-In your main.tf, add the following blocks
+In your `main.tf`, add the following blocks
 
 ```hcl
 resource "google_compute_health_check" "mig-health-check" {
