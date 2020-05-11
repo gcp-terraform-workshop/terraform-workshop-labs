@@ -4,7 +4,7 @@
 
 In this challenge, first download a module from the HashiCorp Terraform Module Registry.Browse to,https://registry.terraform.io/modules/terraform-google-modules/network/google/2.3.0
 
-scroll down and copy the code under the "Usage" section and paste the code into a `main.tf` file. Make sure you modify the `project_id` with your project information. You can leave the rest un changed for this lab. In the future, if you use a module from the registry you can modify the paremeters as needed. 
+Scroll down and copy the code under the "Usage" section and paste the code into a `main.tf` file. Make sure you modify the `project_id` with your project information. You can leave the rest un changed for this lab. In the future, if you use a module from the registry you can modify the paremeters as needed. 
 
  ```hcl
 module "vpc" {
@@ -70,7 +70,7 @@ subnets = [
     ]
 }
 ```
-run `terraform plan` to verify it looks correct, then run `terraform apply` to create the VPC. after review you will need to run `terraform destroy` to remove the infrastructure that was just built.
+run `terraform plan` to verify it looks correct, then run `terraform apply` to create the VPC. After review, you will need to run `terraform destroy` to remove the infrastructure that was just built.
 
 ## Part Two
 
@@ -84,7 +84,7 @@ Change directory into a folder specific to this challenge.
 
 For example: `cd ~/TerraformWorkshop/201-vm-module/`.
 
-In order to organize your code, create the following folder structure with `main.tf` files.
+In order to organize your code, create the following folder structure and configuration files.
 
 ```hcl
 
@@ -93,8 +93,8 @@ In order to organize your code, create the following folder structure with `main
 └── my_linux_vm
         └── main.tf
         └── firewall.tf
-        └── provider
-        └──variables
+        └── provider.tf
+        └──variables.tf
 ```
 
 ### Create the Module declaration in Root
