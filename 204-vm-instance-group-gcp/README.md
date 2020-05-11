@@ -1,6 +1,6 @@
-In this lab you will implenent a common cloud pattern with Terraform to demonstate how terraform can make setting up these patters a simpler tasks
+In this lab you will implement a common cloud pattern with Terraform. To demonstate how terraform can make setting up multiple instances a simpler tasks using patterns lets start with 
 
-The first pattern you will create is a managed instance group. This is a collection of identical VMs that you define via an instance template and set scale on.
+the first pattern you will need to create which is a managed instance group. This is a collection of identical VMs that you define via an instance template and set scale on.
 
 
 ## Resources created 
