@@ -2,7 +2,7 @@
 
 ## Expected Outcome
 
-In this challenge, you will create a GCP Virtual Machine but this time layer in Terraform Provisioners to configure the machines as part the Terraform apply.
+In this challenge, you will create a GCP Virtual Machine but, this time layer in Terraform Provisioners to configure the machines as part the Terraform apply.
 
 ## Background
 
