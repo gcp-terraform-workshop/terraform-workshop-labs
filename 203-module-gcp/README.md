@@ -99,20 +99,20 @@ In order to organize your code, create the following folder structure and config
 
 ### Create the Module declaration in Root
 
-main.tf to declare your module, it could look similar to this:
+In the root folder `main.tf` declare your module, it could look similar to this:
 
 ```hcl
 module "linux_machine" {
   source   = ".//modules/my_linux_vm"
 }
 ```
-### Create the Module folder
+### The Module folder
 Inside the `my_linux_vm` module folder there should be:
 
 `provider.tf` file with the following contents:
 ```hcl
 provider "google" {
-    project = "mimetic-pursuit-271713"
+    project = "Your Project Here"
     region = "us-east1-c"
   }
 ```
@@ -191,7 +191,6 @@ output "name" { value = "${google_compute_instance.default.*.name}" }
 output "zone" { value = "${google_compute_instance.default.*.zone}" }
 
 ```
-
 
 ### Terraform Init
 
