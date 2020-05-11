@@ -1,5 +1,5 @@
 # GCP Container Instance 
-In this challenge, you will learn how to deploy a publically avalable container application using a module from a repository. THe configuration will include; Google Compute Engine instance in GCP, with an attached disk. Also includes SSH configuration, so a user can be provisioned on the fly for future logins.
+In this challenge, you will learn how to deploy a publicly avalable container application using a module from a repository. The configuration will include; Google Compute Engine instance in GCP, with an attached disk. Also includes SSH configuration, so a user can be provisioned on the fly for future logins.
 
 - Create a VM for containers with Compute Engine.
 - Create a HelloWorld container app.
