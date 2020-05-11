@@ -25,7 +25,7 @@ Lets create a `main.tf` and `variables.tf` file to hold our configuration.
 
 ### Create Variables
 
-Create a few variables that will help keep our code clean:
+Create a few variables in the `variables.tf` file that will help keep our code clean:
 
 ```hcl
 variable "region" { 
@@ -49,7 +49,7 @@ variable "user" {
 
 ### Create Virtual Machine Firewall
 
-Next create a VM firewall to allow access to the VM. This will allow incoming icmp protocol (ping)
+Next, in the `main.tf` file, create a VM firewall to allow access to the VM. This will allow incoming icmp protocol (ping)
 and incoming tcp connections on ports 80, 8000, and 8080
 
 ```hcl
@@ -72,7 +72,7 @@ resource "google_compute_firewall" "default" {
 
 ### Create the VM
 
-Add the actual VM:
+in the `main.tf file under the firewall code add the actual VM. 
 
 ```hcl
 resource "google_compute_instance" "compute_instance" {
