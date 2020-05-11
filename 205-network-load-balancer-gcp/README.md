@@ -1,12 +1,10 @@
 ## Google Network Load Balancer
 
-In this lab you will implenent another common cloud pattern with Terraform to demonstate how terraform.
-
-In this lab you are going to build a network load balancer. Also, to deomonstrate how easy it is to extend a terraform model, you will be building the load balancer on top of the model you built in lab 204-vm-instance-group.
+In this lab you are going to build a network load balancer using another common cloud pattern with Terraform . To deomonstrate how easy it is to extend a terraform model, you will be building the load balancer on top of the model you built in lab 204-vm-instance-group.
 
 ## New Resources Created 
-google_compute_forwarding_rule: 
-google_compute_target_pool
+- google_compute_forwarding_rule: 
+- google_compute_target_pool
 
 ## How to
 
@@ -295,7 +293,7 @@ can't guarantee that exactly these actions will be performed if
 
 Run `terraform apply` to create all the infrastructure.
 
-Once the run completes you shoudl see output similar to this
+Once the run completes you should see output similar to this;
 
 ```hcl
 Apply complete! Resources: 6 added, 0 changed, 0 destroyed.
@@ -306,9 +304,9 @@ external_ip = 35.229.46.153
 target_pool = https://www.googleapis.com/compute/v1/projects/dazzling-mantra-271319/regions/us-east1/targetPools/group1-lb
 ```
 
-The `external_ip' is the public ip address of yoru new load balancer. In  few minutes, you will be able to test it. However, It takes a while for the instance group to fully spin up and the startup script to execute.
+The `external_ip' is the public ip address of yoru new load balancer. In few minutes, you will be able to test it. However, it takes a while for the instance group to fully spin up and the startup script to execute.
 
-Open a browser and navigate to your good console. Once logged in, head over to the Computer Engine | Instance Groups section.
+Open a browser and navigate to your GCP console. Once logged in, hgo to the Computer Engine | Instance Groups section.
 ![](img/Img1.png)
 
 Once there click on your new instance group to view the details. The instances will initially show a status of being 'verified'. You need to wait until this is complete and the console shows this:
