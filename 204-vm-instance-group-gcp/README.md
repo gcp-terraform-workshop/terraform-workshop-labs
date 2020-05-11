@@ -1,11 +1,10 @@
 In this lab you will implement a common cloud pattern with Terraform. To demonstate how terraform can make setting up multiple instances a simpler task using patterns let's start first with the pattern you will need to create for the managed instance group. This is a collection of identical VMs that you define via an instance template and set scale on.
 
-
 ## Resources created 
-google_compute_instance_template: The instance template assigned to the instance group.
-google_compute_instance_group_manager: The instange group manager that uses the instance template and target pools.
-google_compute_health_check: Monitors the status of each instance VM
-google_compute_firewall: Firewall rule to allow ssh access to the instances.
+- google_compute_instance_template: The instance template assigned to the instance group.
+- google_compute_instance_group_manager: The instange group manager that uses the instance template and target pools.
+- google_compute_health_check: Monitors the status of each instance VM
+- google_compute_firewall: Firewall rule to allow ssh access to the instances.
 
 ## How to
 
