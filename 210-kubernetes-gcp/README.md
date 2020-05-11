@@ -15,7 +15,7 @@ For example: `cd ~/TerraformWorkshop/201-kubernetes/`.
 
 We will start with a few of the basic resources needed.
 
-Create a `main.tf` file to hold our configuration and a provider.tf (copy from earlier lab).
+You will need a `main.tf` file to hold our configuration and a `provider.tf` (copy from earlier lab).
 
 First copy your `provider.tf` file into the folder.
 
