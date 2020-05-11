@@ -98,7 +98,7 @@ Inspect the infrastructure in the portal.
 
 Change the node count to another number and replan, does it match your expectations?
 
-### Run Terraform Workflow
+### Re-Run Terraform Workflow
 
 Run `terraform init` since this is the first time we are running Terraform from this directory.
 
