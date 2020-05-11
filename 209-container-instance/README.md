@@ -250,7 +250,7 @@ Now that your configuration should be completed you will need to run `terraform 
 
 ## Terraform Apply
 
-Running a `terraform apply` should look just like the resluts from `terraform plan` except you are prompted for approval to apply your configuration.
+Running a `terraform apply` should look just like the results from `terraform plan` except you are prompted for approval to apply your configuration.
 
 Type 'yes' and let Terraform build your infrastructure.
 
