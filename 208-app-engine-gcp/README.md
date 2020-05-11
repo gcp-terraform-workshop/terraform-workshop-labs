@@ -85,7 +85,7 @@ resource "google_storage_bucket_object" "object" {
   default = "YOUR BUCKET NAME HERE"
   }
   ```
-  8. Copy the lab hello-world.zip file into the folder labeled "file"
+  8. Copy the lab hello-world.zip file into the folder labeled "file". (use the zip file provided in the solution/file folder)
 
  9. Run terraform init
 10. Run terraform plan
