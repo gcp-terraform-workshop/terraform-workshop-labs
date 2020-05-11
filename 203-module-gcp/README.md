@@ -2,7 +2,7 @@
 
 ## Expected Outcome
 
-In this challenge, first download a module from the HashiCorp Terraform Module Registry.Browse to,https://registry.terraform.io/modules/terraform-google-modules/network/google/2.3.0
+In this challenge, first download a module from the HashiCorp Terraform Module Registry. Browse to,https://registry.terraform.io/modules/terraform-google-modules/network/google/2.3.0
 
 Scroll down and copy the code under the "Usage" section and paste the code into a `main.tf` file. Make sure you modify the `project_id` with your project information. You can leave the rest un changed for this lab. In the future, if you use a module from the registry you can modify the paremeters as needed. 
 
@@ -72,9 +72,9 @@ subnets = [
 ```
 run `terraform plan` to verify it looks correct, then run `terraform apply` to create the VPC. After review, you will need to run `terraform destroy` to remove the infrastructure that was just built.
 
-## Part Two
+# Part Two
 
-Next you will create a module to contain a virtual machine deployment, then create an environment where you will call the module.
+Next you will create a module that contains a virtual machine deployment and then create an environment where you will call the module.
 
 ## How to
 
@@ -87,10 +87,9 @@ For example: `cd ~/TerraformWorkshop/201-vm-module/`.
 In order to organize your code, create the following folder structure and configuration files.
 
 ```hcl
-
-└── modules
-└── main.tf
-└── my_linux_vm
+└── module (folder)
+    main.tf
+    └── my_linux_vm
         └── main.tf
         └── firewall.tf
         └── provider.tf
