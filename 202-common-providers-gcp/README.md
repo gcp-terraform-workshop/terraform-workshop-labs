@@ -25,7 +25,7 @@ metadata_startup_script = file("vm_startup.txt")
 }
 ```
 In order to have some dynamic values in your startup-script we will need to use the templatefile() function instead of file().
-Create a new folder and copy you `main.tf` and `vm_startup.txt` files into the new folder.
+Create a new folder and copy your `main.tf` and `vm_startup.txt` files into the new folder.
 Change the /tmp/ text to /home/${user}/. This will let us pass in a value for $user from the templatefile() function.
 
 This tells terrafrom to render the contents of `vy_startup.tpl` into metadata_startup_script
