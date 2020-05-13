@@ -22,72 +22,10 @@ Change/create directory into a folder specific to this challenge.
 
 For example: cd ~/TerraformWorkshop/208-app-engine
 
-6. Create a new file called `main.tf` with the following contents. 
-
-```hcl
-provider "google" {
-  credentials = file("terraform.json")
-  project = var.gcp_project
-}
-
-data "google_project" "project" {}
-
-resource "google_app_engine_application" "app" {
-  project     = data.google_project.project.project_id
-  location_id = "us-central"
-}
-
-resource "google_app_engine_standard_app_version" "myapp_v1" {
-  version_id = "v1"
-  service    = "default"
-  runtime    = "nodejs10"
-  project    = data.google_project.project.project_id
-
-  entrypoint {
-    shell = "node ./app.js"
-  }
-
-  deployment {
-    zip {
-      source_url = "https://storage.googleapis.com/${google_storage_bucket.bucket.name}/${google_storage_bucket_object.object.name}"
-    }
-  }
-
-  env_variables = {
-    port = "8080"
-  }
-
-  delete_service_on_destroy = true
-}
-
-resource "google_storage_bucket" "bucket" {
-  name    = var.google_storage_bucket
-  project = data.google_project.project.project_id
-
-}
-
-resource "google_storage_bucket_object" "object" {
-  name   ="hello_world.zip"
-  bucket = google_storage_bucket.bucket.name
-  source = "./file/hello_world.zip"
-}
-```
-
- 7. Use the code below for the `variables.tf` file. Make sure you update the project Id & bucket name in variables.tf 
-
-
- ```hcl
-   variable "gcp_project" {
-  default = "YOUR PROJECT NAME HERE"
-  }
-
-  variable "google_storage_bucket" {
-  default = "YOUR BUCKET NAME HERE"
-  }
-  ```
-  8. Copy the lab hello-world.zip file into the folder labeled "file". (use the zip file provided in the solution/file folder)
-
- 9. Run terraform init
+6. Create a new file called `main.tf` add the resources/parameters for Standard App Engine. 
+7. Use the `variables.tf` file to add the project Id & bucket name in variables.tf 
+8. Copy the lab hello-world.zip file into the folder labeled "file". (use the zip file provided in the solution/file folder)
+9. Run terraform init
 10. Run terraform plan
 11. Run terraform apply
 
