@@ -1,0 +1,58 @@
+pipeline {
+  agent {
+    docker {
+      image 'hashicorp/terraform:light'
+      args '--entrypoint='
+    }
+  }
+  stages {
+
+    stage('Clone repo') {
+        steps {
+            git url: 'https://github.com/terraform-google-modules/docs-examples.git'
+        }
+    }
+
+    stage('Terraform Init') { 
+      steps {
+            dir  ('./instance_with_ip') {
+                sh 'terraform init' 
+            }
+          
+      }
+    }
+    
+    stage('Terraform Plan') { 
+      steps {
+           withCredentials([file(credentialsId: 'google-sa', variable: 'FILE')]) {
+            dir  ('./instance_with_ip') {
+                sh 'GOOGLE_PROJECT=booth-test-55 GOOGLE_APPLICATION_CREDENTIALS=$FILE terraform plan -no-color -out=create.tfplan' 
+            }
+       }
+      }
+    }
+
+
+    stage('Terraform Apply') { 
+      steps {
+           withCredentials([file(credentialsId: 'google-sa', variable: 'FILE')]) {
+            dir  ('./instance_with_ip') {
+                sh 'GOOGLE_PROJECT=booth-test-55 GOOGLE_APPLICATION_CREDENTIALS=$FILE terraform apply -no-color create.tfplan'
+            }
+       }
+      }
+    }
+    
+    stage('Terraform Destroy') { 
+      steps {
+           withCredentials([file(credentialsId: 'google-sa', variable: 'FILE')]) {
+            dir  ('./instance_with_ip') {
+                sh 'GOOGLE_PROJECT=booth-test-55 GOOGLE_APPLICATION_CREDENTIALS=$FILE terraform destroy -auto-approve'
+            }
+       }
+      }
+    }    
+    
+  }
+  
+}
