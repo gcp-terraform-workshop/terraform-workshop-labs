@@ -87,11 +87,10 @@ Run `terraform apply -auto-approve`.
 
 You should now have two new files in your current working directory.
 
-Now delete one of the files (i.e. `rm id_rsa.pem`).
+Next, let's delete one of the files (i.e. `rm id_rsa.pem`).
 
-Run a `terraform plan`, what changes (if any) are needed? Is this what you expected?
-
-Run `terraform apply -auto-approve` to restore any deleted files.
+- Run a `terraform plan`, what changes (if any) are needed? Is this what you expected?
+- Run `terraform apply -auto-approve` **What happend?**
 
 ### Clean up
 
