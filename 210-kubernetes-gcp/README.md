@@ -11,7 +11,7 @@ In this challenge, you will create a basic kubernetes cluster from a module with
 
 Change directory into a folder specific to this challenge.
 
-For example: `cd ~/TerraformWorkshop/201-kubernetes/`.
+For example: `cd ~/TerraformWorkshop/210-kubernetes/`.
 
 We will start with a few of the basic resources needed.
 
