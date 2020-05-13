@@ -1,6 +1,7 @@
 # GCP Container Instance 
 In this challenge, you will learn how to deploy a publicly avalable container application using a module from a repository. The configuration will include; "Simple-Instance" Google Compute Engine instance in GCP, with an attached disk. Also includes SSH configuration, so a user can be provisioned on the fly for future logins.
 
+## How to 
 - Create a `main.tf
 - Create a variables.tf
 - tfvars file to override the module defaults with the information for your project
@@ -49,23 +50,8 @@ For example: `cd ~/TerraformWorkshop/209-container-instance/`.
 
 Create a new file called `main.tf` use the following Git Repository as an example: `https://github.com/terraform-google-modules/terraform-google-container-vm/tree/master/examples/simple_instance`
 
-Next add the `variables.tf` file including the variables below;  
+Next add the `variables.tf` file including the Input variables above.
 
-```hcl
-
-"project_id" 
-"subnetwork_project" 
-"subnetwork" 
-"instance_name" 
-"image" 
-"image_port" 
-"restart_policy" 
-"machine_type" 
-"zone" 
-"additional_metadata" 
-"client_email" 
- "cos_image_name" 
-```
 Next we need to add a `tfvars file `. 
 
 Now add an `outputs.tf` file that will provide the information for you to verify/view your deployment after running `terraform apply`.
