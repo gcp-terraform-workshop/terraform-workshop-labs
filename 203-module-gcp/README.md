@@ -56,7 +56,7 @@ variable "name_count" ...
 
 ```
 
-Next, in the `main.tf` file create your resources and use the appropriate variables that you crated to populate the paremeters. Don't forget output paremeters for machine_type, name & zone.
+Next, in the `main.tf` file create your resources and use the appropriate variables that you created to populate the paremeters. Don't forget output paremeters for machine_type, name & zone.
 
 ### Terraform Init
 
@@ -99,7 +99,7 @@ can't guarantee that exactly these actions will be performed if
 
 ```
 
-run `terraform plan` to verify there are no errors, then run `terraform apply` to create the VM. After review you will need to run `terraform destroy` to remove the infrastructure that was just built.
+Finally run `terraform apply` to create the VM. After review you will need to run `terraform destroy` to remove the infrastructure that was just built.
 
 > Note: Feel free to apply this infrastructure to validate the workflow. Be sure to destroy when you are done.
 
