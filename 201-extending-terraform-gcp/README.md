@@ -14,43 +14,23 @@ Create a  `main.tf` file, we will add to this file as we go.
 
 ### Random Generator
 
-Create a random password:
-
-```hcl
-resource "random_password" "password" {
-  length  = 16
-  special = true
-}
-
-output "password" {
-  value = random_password.password.result
-}
-```
+First create a random password string and use an "output" to display the results. 
 
 Run `terraform init`,
 
 Run `terraform apply -auto-approve`.
 
-```sh
-Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
 
+output should look simular to this:
+```hcl
 Outputs:
 
 password = USCx=<D(7+KVWu:o
 ```
 
-Add the following configuration:
+Next add a "random guid" to the configuration. After Apply your output should look simular to this now;
 
 ```hcl
-resource "random_uuid" "guid" {
-}
-
-output "guid" {
-  value = random_uuid.guid.result
-}
-```
-
-```sh
 Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
 
 Outputs:
@@ -64,31 +44,19 @@ password = USCx=<D(7+KVWu:o
 
 Now **update** the `random_guid` resource to use a "keepers" arguement:
 
-```hcl
-resource "random_uuid" "guid" {
-  keepers = {
-    datetime = timestamp()
-  }
-}
-```
-
-Run `terraform apply -auto-approve` several times in a row, what happens to the guid output?
+Run `terraform apply -auto-approve` several times in a row. **What happens to the guid output?**
 
 ### SSH Public/Private Key Generator
 
-Use Terraform to generate public/private SSH keys dynamically.
-
-```hcl
-resource "tls_private_key" "tls" {
-  algorithm = "RSA"
-}
-```
+Now you will add configuration for Terraform to generate public/private SSH keys (rsa), dynamically.
 
 Run `terraform init`,
 
 Run `terraform apply -auto-approve`.
 
-```sh
+output should look simular to below;
+
+```hcl
 Apply complete! Resources: 2 added, 0 changed, 2 destroyed.
 
 Outputs:
@@ -97,25 +65,9 @@ guid = ad4efda0-d17d-559c-5cfe-1ed3ab9ce86b
 password = USCx=<D(7+KVWu:o
 ```
 
-This is great, but I wan the keys as files, how?
+This is great, but we want the keys as files, how?
 
-Add the following config:
-
-```hcl
-resource "local_file" "tls-public" {
-  filename = "id_rsa.pub"
-  content  = tls_private_key.tls.public_key_openssh
-}
-
-resource "local_file" "tls-private" {
-  filename = "id_rsa.pem"
-  content  = tls_private_key.tls.private_key_pem
-
-  provisioner "local-exec" {
-    command = "chmod 600 id_rsa.pem"
-  }
-}
-```
+Hint: You will need to use the local-exec provider to change permissions 
 
 What is this "local-exec"?
 
@@ -127,7 +79,7 @@ It is recommended that your private key files are NOT accessible by others.
 This private key will be ignored.
 ```
 
-This local exec will run a `chmod` on the file after it is created.
+Add the `local exec` configuration so it will run a `chmod` on the file after it is created.
 
 Run `terraform init`,
 
@@ -135,11 +87,10 @@ Run `terraform apply -auto-approve`.
 
 You should now have two new files in your current working directory.
 
-Now delete one of the files (i.e. `rm id_rsa.pem`).
+Next, let's delete one of the files (i.e. `rm id_rsa.pem`).
 
-Run a `terraform plan`, what changes (if any) are needed? Is this what you expected?
-
-Run `terraform apply -auto-approve` to restore any deleted files.
+- Run a `terraform plan`, what changes (if any) are needed? Is this what you expected?
+- Run `terraform apply -auto-approve` **What happend?**
 
 ### Clean up
 

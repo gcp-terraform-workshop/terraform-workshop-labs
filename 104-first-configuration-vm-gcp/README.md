@@ -60,7 +60,7 @@ With your variables setup, you can now begin to create the terraform ocnfigurati
 
 ### Add provider and terraform blocks.
 
-Add the terraform and provider blocks from 101-connect-gcp. These will be resused in most of the labs today
+Add a terraform and provider block. These will be resused in most of the labs today
 
 ```hcl
 terraform {

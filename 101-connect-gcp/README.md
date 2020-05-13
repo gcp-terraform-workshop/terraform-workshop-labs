@@ -15,7 +15,7 @@ In this challenge, you will:
 
 ### Create Terraform Configuration
 
-Change directory into a folder specific to this challenge.
+Change directory into a folder specific for this challenge.
 
 For example: `cd ~/TerraformWorkshop/101-connect-gcp/`.
 
@@ -48,14 +48,14 @@ You will need to tell terraform how to authenticate to gcp by creating new servi
 ### 4. Click on Role, search for 'editor'. Select 'Editor - Access to All Resources', then click `Continue`
 ![](img/Service-Credentials.png)
 
-### 4. Click `+ Create Key`, the `Create'. This will create a key file and start a download. This file will be used to provice authentication credentials to your GCP terraform project.
+### 4. Click `+ Create Key`, then `Create', choose json format. This will create a key file and start a download. This file will be used to provice authentication credentials to your GCP terraform project.
 
 ### 5. Copy the new key file into the root folder of your terraform project.
 
 ### 6. Update the google provider terraform block with the new credential file name
 ```
 provider "google" {
-  credentials = "${file("../../your-key.json")}"
+  credentials = file("YOUR CREDENTIALS FILE HERE")
   region  = "us-east1"
   zone    = "us-east1-a"
 }
