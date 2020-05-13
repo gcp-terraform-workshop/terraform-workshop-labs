@@ -3,17 +3,17 @@ in a previous lab.
 
 Now lets, take a closer look at templates, random and file providers a little closer.
 
-The template provider has been repalced with a templatefile function. We will look at the function.
-The templatefile reads the file at the given path and renders its content as a template using a supplied set of template variables. 
-A common use is to have an extenral file contain the startup script you want to run on a VM instance instead of putting that script inline on the VM terraform config
+The template provider has been replaced with a `templatefile` function. The `templatefile` reads the file at the given path and renders its content as a template using a supplied set of template variables. 
+
+A common use is to have an extenral file contain the startup script you want to run on a VM instance instead of putting that script inline on the VM terraform config.
+
 Lets work through an example of doing that now.
-Copy your solution from 105-custom-data-gcp into this lab
+Copy your solution from 105-custom-data-gcp into this lab.
 Now, create a new file and name it 'vm_startup.txt'
 
 In the `main.tf` file you just copied find the line `metadata_startup_script = <<SCRIPT`
 Copy all of the text between the SCRIPT tags but, do not include the tags.
 Edit everywhere you see /home/${var.user}/ change it to /tmp/
-
 
 Now we need to create our file resource. 
 Replace all the SCRIPT text in the `main.tf`. This change tells terrafrom to render the contents of vm_startup.txt into the `metadata_startup_script` the file function will insert the template text into the `main.tf` config.
