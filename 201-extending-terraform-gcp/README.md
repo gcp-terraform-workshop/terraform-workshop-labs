@@ -44,7 +44,7 @@ password = USCx=<D(7+KVWu:o
 
 Now **update** the `random_guid` resource to use a "keepers" arguement:
 
-Run `terraform apply -auto-approve` several times in a row, what happens to the guid output?
+Run `terraform apply -auto-approve` several times in a row. **What happens to the guid output?**
 
 ### SSH Public/Private Key Generator
 
