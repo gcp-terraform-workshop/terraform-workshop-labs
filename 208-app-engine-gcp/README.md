@@ -16,7 +16,7 @@ Working folder should look like this:
     Files (folder)
     main.tf
     variables.tf
-    terraform.json  
+    credentials.json  
  
 Change/create directory into a folder specific to this challenge.
 
