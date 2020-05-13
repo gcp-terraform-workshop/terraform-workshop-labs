@@ -1,38 +1,42 @@
 //environment   = "PREFIX3"
-variable "region" { 
-    default = "us-east1"
+variable "region" {
+  default = "us-east1"
 }
 variable "project_id" {
-    default = "dazzling-mantra-271319"
+  default = "booth-test-55"
 }
+
+variable "zone" {
+  default = "us-east1-a"
+}
+
+
 variable "svc_acct_email" {
-  default = "dazzling-mantra-271319@appspot.gserviceaccount.com"
+  default = "booth-insight-sa@booth-test-55.iam.gserviceaccount.com"
 }
 variable "user" {
-  default ="ed.boykin"
+  default = "ed.boykin"
 }
 
 
 terraform {
   backend "gcs" {
-    credentials = "../../dazzling-mantra-271319-bcb28c004aed.json"
-    bucket  = "my-demo-storage-bucket"
-    prefix  = "terraform/state"
-  
+    bucket = "booth-demo-storage-bucket"
+    prefix = "terraform/state108"
+
   }
 }
 
 provider "google" {
-  credentials = file("../../dazzling-mantra-271319-bcb28c004aed.json")
-  region  = "us-east1"
-  zone    = "us-east1-a"
-  project = "dazzling-mantra-271319"
-  
+  region  = var.region
+  zone    = var.zone
+  project = var.project_id
+
 }
 
 resource "google_compute_firewall" "default" {
-  name       = "default-firewall"
-  network    = "default"
+  name    = "default-firewall"
+  network = "default"
 
   allow {
     protocol = "icmp"
@@ -53,12 +57,12 @@ resource "google_compute_instance" "compute_instance" {
   zone         = "${var.region}-b"
 
   metadata = {
-    ssh-keys = "${var.user}:${file("~/.ssh/gcpvmkey.pub")}"
+    ssh-keys = "${var.user}:${file("~/.ssh/id_rsa.pub")}"
   }
 
   boot_disk {
     initialize_params {
-      
+
       image = "ubuntu-os-cloud/ubuntu-1804-lts"
     }
   }
@@ -72,17 +76,17 @@ resource "google_compute_instance" "compute_instance" {
   }
 
   service_account {
-    email = var.svc_acct_email 
+    email  = var.svc_acct_email
     scopes = ["userinfo-email", "compute-ro", "storage-ro"]
   }
 
- provisioner "file" {
+  provisioner "file" {
     connection {
       host        = self.network_interface[0].access_config[0].nat_ip
-      type     = "ssh"
+      type        = "ssh"
       user        = var.user
       timeout     = "500s"
-      private_key = file("~/.ssh/gcpvmkey")
+      private_key = file("~/.ssh/id_rsa")
     }
 
     source      = "hello.py"
@@ -90,12 +94,12 @@ resource "google_compute_instance" "compute_instance" {
   }
 
   provisioner "remote-exec" {
-      connection {
+    connection {
       host        = self.network_interface[0].access_config[0].nat_ip
       type        = "ssh"
       user        = var.user
       timeout     = "500s"
-      private_key = file("~/.ssh/gcpvmkey")
+      private_key = file("~/.ssh/id_rsa")
     }
 
     inline = [
@@ -106,7 +110,7 @@ resource "google_compute_instance" "compute_instance" {
       "sudo FLASK_APP=hello.py nohup flask run --host=0.0.0.0 --port=8000 &",
       "sleep 1"
     ]
-  }  
+  }
 }
 
 output "app-URL" {

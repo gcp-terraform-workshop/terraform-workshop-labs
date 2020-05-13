@@ -1,9 +1,9 @@
 
 terraform {
   backend "gcs" {
-    bucket  = "booth-demo-storage-bucket"
-    prefix  = "terraform/state"
-  
+    bucket = "booth-demo-storage-bucket"
+    prefix = "terraform/state"
+
   }
 }
 
@@ -11,12 +11,12 @@ provider "google" {
   region  = "us-east1"
   zone    = "us-east1-a"
   project = var.project_id
-  
+
 }
 
 resource "google_compute_firewall" "default" {
-  name       = "default-firewall"
-  network    = "default"
+  name    = "default-firewall"
+  network = "default"
 
   allow {
     protocol = "icmp"
@@ -38,7 +38,7 @@ resource "google_compute_instance" "compute_instance" {
 
   boot_disk {
     initialize_params {
-      
+
       image = "ubuntu-os-cloud/ubuntu-1804-lts"
     }
   }
@@ -52,7 +52,7 @@ resource "google_compute_instance" "compute_instance" {
   }
 
   service_account {
-    email = var.svc_acct_email 
+    email  = var.svc_acct_email
     scopes = ["userinfo-email", "compute-ro", "storage-ro"]
   }
 }

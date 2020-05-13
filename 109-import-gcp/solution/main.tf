@@ -1,8 +1,8 @@
 provider "google" {
   credentials = file("../../dazzling-mantra-271319-bcb28c004aed.json")
-  region  = "us-east1"
-  zone    = "us-east1-a"
-  project = "dazzling-mantra-271319"
+  region      = "us-east1"
+  zone        = "us-east1-a"
+  project     = "dazzling-mantra-271319"
 }
 
 

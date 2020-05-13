@@ -1,38 +1,38 @@
 //environment   = "PREFIX3"
-variable "region" { 
-    default = "us-east1"
+variable "region" {
+  default = "us-east1"
 }
 variable "project_id" {
-    default = "dazzling-mantra-271319"
+  default = "dazzling-mantra-271319"
 }
 variable "svc_acct_email" {
   default = "dazzling-mantra-271319@appspot.gserviceaccount.com"
 }
 variable "user" {
-  default ="ed.boykin"
+  default = "ed.boykin"
 }
 
 
 terraform {
   backend "gcs" {
     credentials = "../../dazzling-mantra-271319-bcb28c004aed.json"
-    bucket  = "my-demo-storage-bucket"
-    prefix  = "terraform/state"
-  
+    bucket      = "my-demo-storage-bucket"
+    prefix      = "terraform/state"
+
   }
 }
 
 provider "google" {
   credentials = file("../../dazzling-mantra-271319-bcb28c004aed.json")
-  region  = "us-east1"
-  zone    = "us-east1-a"
-  project = "dazzling-mantra-271319"
-  
+  region      = "us-east1"
+  zone        = "us-east1-a"
+  project     = "dazzling-mantra-271319"
+
 }
 
 resource "google_compute_firewall" "default" {
-  name       = "default-firewall"
-  network    = "default"
+  name    = "default-firewall"
+  network = "default"
 
   allow {
     protocol = "icmp"
@@ -54,7 +54,7 @@ resource "google_compute_instance" "compute_instance" {
 
   boot_disk {
     initialize_params {
-      
+
       image = "ubuntu-os-cloud/ubuntu-1804-lts"
     }
   }
@@ -68,14 +68,14 @@ resource "google_compute_instance" "compute_instance" {
   }
 
   service_account {
-    email = var.svc_acct_email 
+    email  = var.svc_acct_email
     scopes = ["userinfo-email", "compute-ro", "storage-ro"]
   }
-  
+
   metadata = {
     ssh-keys = "${var.user}:${file("~/.ssh/gcpvmkey.pub")}"
   }
-  
+
   metadata_startup_script = file("vm_startup.txt")
 
 }
